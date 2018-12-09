@@ -35,7 +35,22 @@ The data set can be downloaded [the EPFL private challenge](https://www.crowdai.
 
 Our task is to create the following file:
 
-- **submission.csv** - A row should have label -1 if the features are predicted to be background noise, 1 if a higgs boson is detected.
+- **submission.csv**
+
+## How to run Keras (with GPU) on a Jupyter notebook from a EC2 (AWS) machine
+
+1. Sign-up for a AWS Educate account, or even better use the promo from the Github student pack to create a full-fledged AWS account.
+2. Go to your AWS workbench and follow [this guide](https://hackernoon.com/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac) until the end of section 3. Note that you should select "Deep Learning AMI (Ubuntu) Version 19.0 " for example from the list of community AMI's.
+3. Follow [this AWS guide](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html) to run a Jupyter notebook server and access it from your browser. Note that if you have not configured SSL you should use http to access your notebook.
+
+
+
+Here are some other tips that might be useful to you :
+
+- The AMI that we installed come with many virtual environments, once you ssh to the machine you can activate the environment you want as described in the login message. Note that to install packages you can use pip, once you activated your virtualenv.
+
+- You will need to tell your Jupyter Notebook which environment to use, this setting can be changed under the `Kernels` tab.
+
 
 ## Our Approach
 
