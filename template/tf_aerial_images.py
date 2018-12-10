@@ -396,7 +396,7 @@ def main(argv=None):  # pylint: disable=unused-argument
     # print 'logits = ' + str(logits.get_shape()) + ' train_labels_node = ' + str(train_labels_node.get_shape())
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
         logits = logits, labels = train_labels_node))
-    tf.scalar_summary('loss', loss)
+    tf.summary.scalar('loss', loss)
 
     all_params_node = [conv1_weights, conv1_biases, conv2_weights, conv2_biases, fc1_weights, fc1_biases, fc2_weights, fc2_biases]
     all_params_names = ['conv1_weights', 'conv1_biases', 'conv2_weights', 'conv2_biases', 'fc1_weights', 'fc1_biases', 'fc2_weights', 'fc2_biases']
@@ -405,7 +405,7 @@ def main(argv=None):  # pylint: disable=unused-argument
     for i in range(0, len(all_grads_node)):
         norm_grad_i = tf.global_norm([all_grads_node[i]])
         all_grad_norms_node.append(norm_grad_i)
-        tf.scalar_summary(all_params_names[i], norm_grad_i)
+        tf.summary.scalar(all_params_names[i], norm_grad_i)
     
     # L2 regularization for the fully connected parameters.
     regularizers = (tf.nn.l2_loss(fc1_weights) + tf.nn.l2_loss(fc1_biases) +
@@ -423,7 +423,7 @@ def main(argv=None):  # pylint: disable=unused-argument
         train_size,          # Decay step.
         0.95,                # Decay rate.
         staircase=True)
-    tf.scalar_summary('learning_rate', learning_rate)
+    tf.summary.scalar('learning_rate', learning_rate)
     
     # Use simple momentum for the optimization.
     optimizer = tf.train.MomentumOptimizer(learning_rate,
@@ -452,8 +452,8 @@ def main(argv=None):  # pylint: disable=unused-argument
             tf.initialize_all_variables().run()
 
             # Build the summary operation based on the TF collection of Summaries.
-            summary_op = tf.merge_all_summaries()
-            summary_writer = tf.train.SummaryWriter(FLAGS.train_dir,
+            summary_op = tf.summary.merge_all()
+            summary_writer = tf.summary.FileWriter(FLAGS.train_dir,
                                                     graph_def=s.graph_def)
             print ('Initialized!')
             # Loop through training steps.
