@@ -77,7 +77,7 @@ j
 7. Baseline (without doing anything? using a method seen previously?)
 8. Handle Boundaries (mirror, which size?)
 9. Activation function (test which one is the best? relu, relu leak,..)
-10.Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
+10. Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
 11. Regularization? 
 
 ## Further ideas
