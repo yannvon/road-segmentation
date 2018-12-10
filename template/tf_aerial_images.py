@@ -377,15 +377,15 @@ def main(argv=None):  # pylint: disable=unused-argument
         if train == True:
             summary_id = '_0'
             s_data = get_image_summary(data)
-            filter_summary0 = tf.image_summary('summary_data' + summary_id, s_data)
+            filter_summary0 = tf.summary.image('summary_data' + summary_id, s_data)
             s_conv = get_image_summary(conv)
-            filter_summary2 = tf.image_summary('summary_conv' + summary_id, s_conv)
+            filter_summary2 = tf.summary.image('summary_conv' + summary_id, s_conv)
             s_pool = get_image_summary(pool)
-            filter_summary3 = tf.image_summary('summary_pool' + summary_id, s_pool)
+            filter_summary3 = tf.summary.image('summary_pool' + summary_id, s_pool)
             s_conv2 = get_image_summary(conv2)
-            filter_summary4 = tf.image_summary('summary_conv2' + summary_id, s_conv2)
+            filter_summary4 = tf.summary.image('summary_conv2' + summary_id, s_conv2)
             s_pool2 = get_image_summary(pool2)
-            filter_summary5 = tf.image_summary('summary_pool2' + summary_id, s_pool2)
+            filter_summary5 = tf.summary.image('summary_pool2' + summary_id, s_pool2)
 
         return out
 
@@ -393,7 +393,7 @@ def main(argv=None):  # pylint: disable=unused-argument
     logits = model(train_data_node, True) # BATCH_SIZE*NUM_LABELS
     # print 'logits = ' + str(logits.get_shape()) + ' train_labels_node = ' + str(train_labels_node.get_shape())
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-        logits, train_labels_node))
+        logits = logits, labels = train_labels_node))
     tf.scalar_summary('loss', loss)
 
     all_params_node = [conv1_weights, conv1_biases, conv2_weights, conv2_biases, fc1_weights, fc1_biases, fc2_weights, fc2_biases]
