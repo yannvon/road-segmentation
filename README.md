@@ -73,8 +73,12 @@ j
 3. Always justify with sources
 4. Display filters would be nice
 5. Drop out, to avoid overfit - add some tables
-6. Data augmentation
-7. 
+6. Data augmentation (rotation of 45 or 90 deg? chosen at random?)
+7. Baseline (without doing anything? using a method seen previously?)
+8. Handle Boundaries (mirror, which size?)
+9. Activation function (test which one is the best? relu, relu leak,..)
+10.Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
+11. Regularization? 
 
 ## Further ideas
 
