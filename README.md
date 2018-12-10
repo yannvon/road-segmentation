@@ -62,6 +62,20 @@ Here are some other tips that might be useful to you :
 - Tiago Kieliger
 - Yann Vonlanthen
 
+j
+
+## Report Notes
+
+
+
+1. No cross validation -justification
+2. Illustrations to show our claim
+3. Always justify with sources
+4. Display filters would be nice
+5. Drop out, to avoid overfit - add some tables
+6. Data augmentation
+7. 
+
 ## Further ideas
 
 - [ ] 
