@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """
 Baseline for machine learning project on road segmentation.
 This simple baseline consits of a CNN with two convolutional+pooling layers with a soft-max loss
@@ -187,7 +189,7 @@ def make_img_overlay(img, predicted_img):
 
 def main(argv=None):  # pylint: disable=unused-argument
 
-    data_dir = 'training/'
+    data_dir = '../dataset/training/'
     train_data_filename = data_dir + 'images/'
     train_labels_filename = data_dir + 'groundtruth/' 
 
