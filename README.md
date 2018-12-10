@@ -92,5 +92,5 @@ http://127.0.0.1:8157 # Not HTTPS !
 
 ## Further ideas
 
-- [ ] 
+- [ ] Use pre- trained models
 
