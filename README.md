@@ -48,11 +48,23 @@ Our task is to create the following file:
 Here are some other tips that might be useful to you :
 
 - The AMI that we installed come with many virtual environments, once you ssh to the machine you can activate the environment you want as described in the login message. Note that to install packages you can use pip, once you activated your virtualenv.
-
 - You will need to tell your Jupyter Notebook which environment to use, this setting can be changed under the `Kernels` tab.
+
+### Useful commands
+
+```
+ssh -i "aws_key.pem" ubuntu@ec2-54-159-38-26.compute-1.amazonaws.com
+
+ssh -i "aws_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-54-159-38-26.compute-1.amazonaws.com
+
+http://127.0.0.1:8157 # Not HTTPS !
+
+```
 
 
 ## Our Approach
+
+
 
 
 
@@ -61,8 +73,6 @@ Here are some other tips that might be useful to you :
 - Benno Schneeberger
 - Tiago Kieliger
 - Yann Vonlanthen
-
-j
 
 ## Report Notes
 
