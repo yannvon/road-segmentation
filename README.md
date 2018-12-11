@@ -59,6 +59,11 @@ ssh -i "aws_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-54-159-38-26.compute-1.am
 
 http://127.0.0.1:8157 # Not HTTPS !
 
+source activate tensorflow_p36
+
+pip install opencv-python
+
+
 ```
 
 
@@ -89,6 +94,8 @@ http://127.0.0.1:8157 # Not HTTPS !
 9. Activation function (test which one is the best? relu, relu leak,..)
 10. Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
 11. Regularization? 
+12. Make sure same amount of road and non road - done in template
+13. Sliding window to have much more data
 
 ## Further ideas
 
