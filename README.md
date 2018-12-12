@@ -94,8 +94,8 @@ pip install opencv-python
 9. Activation function (test which one is the best? relu, relu leak,..)
 10. Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
 11. Regularization? 
-12. Make sure same amount of road and non road - done in template
-13. Sliding window to have much more data
+12. Make sure same amount of road and non road training data - done in template
+13. Sliding window to have much more data.
 
 ## Further ideas
 
