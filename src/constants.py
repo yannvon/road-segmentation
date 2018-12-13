@@ -15,3 +15,5 @@ RECORDING_STEP = 1000
 # image size should be an integer multiple of this number!
 IMG_PATCH_SIZE = 16
 NUM_CHANNELS = 3 # RGB images
+FOREGROUND_THRESHOLD = 0.25  # percentage of pixels > 1 required to assign a foreground label to a patch
+
