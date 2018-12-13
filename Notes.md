@@ -10,4 +10,4 @@ roads are not necessarily horizontal or vertical
 
 
 ##Links 
-
+https://www.azavea.com/blog/2017/05/30/deep-learning-on-aerial-imagery/
