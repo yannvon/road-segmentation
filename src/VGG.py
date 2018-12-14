@@ -15,7 +15,7 @@ def VGGModel():
 
     #Size of input matrix
     #To change according to the shape
-    shape = (72, 72, 3)
+    shape = (48, 48, 3)
     model = Sequential()
 
 
