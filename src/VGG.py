@@ -15,7 +15,7 @@ def VGGModel():
 
     #Size of input matrix
     #To change according to the shape
-    shape = (16, 16, 3)
+    shape = (72, 72, 3)
     model = Sequential()
 
 
@@ -27,6 +27,7 @@ def VGGModel():
                             padding='same',
                             input_shape=shape))
     model.add(LeakyReLU(alpha_relu))
+    model.add(MaxPooling2D(pool_size))
     model.add(Convolution2D(64,
                             kernel_size,
                             padding='same',
@@ -40,6 +41,7 @@ def VGGModel():
                             padding='same',
                             input_shape=shape))
     model.add(LeakyReLU(alpha_relu))
+    model.add(MaxPooling2D(pool_size))
     model.add(Convolution2D(128,
                             kernel_size,
                             padding='same',
@@ -53,13 +55,13 @@ def VGGModel():
                             padding='same',
                             input_shape=shape))
     model.add(LeakyReLU(alpha_relu))
+    model.add(MaxPooling2D(pool_size))
     model.add(Convolution2D(256,
                             kernel_size,
                             padding='same',
                             input_shape=shape))
     model.add(Dropout(0.1))
     model.add(LeakyReLU(alpha_relu))
-    model.add(MaxPooling2D(pool_size))
     
     model.add(Flatten())
 
