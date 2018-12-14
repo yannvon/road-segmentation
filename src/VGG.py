@@ -31,6 +31,7 @@ def VGGModel():
                             kernel_size,
                             padding='same',
                             input_shape=shape))
+    model.add(Dropout(0.1))
     model.add(LeakyReLU(alpha_relu))
     model.add(MaxPooling2D(pool_size))
 
@@ -43,6 +44,7 @@ def VGGModel():
                             kernel_size,
                             padding='same',
                             input_shape=shape))
+    model.add(Dropout(0.1))
     model.add(LeakyReLU(alpha_relu))
     model.add(MaxPooling2D(pool_size))
 
@@ -55,22 +57,11 @@ def VGGModel():
                             kernel_size,
                             padding='same',
                             input_shape=shape))
-    model.add(LeakyReLU(alpha_relu))
-    model.add(Convolution2D(256,
-                            kernel_size,
-                            padding='same',
-                            input_shape=shape))
+    model.add(Dropout(0.1))
     model.add(LeakyReLU(alpha_relu))
     model.add(MaxPooling2D(pool_size))
-
+    
     model.add(Flatten())
-    model.add(Dense(128))
-    model.add(LeakyReLU(alpha=0.1))
-    model.add(Dropout(0.5))
-
-    model.add(Dense(128))
-    model.add(LeakyReLU(alpha=0.1))
-    model.add(Dropout(0.5))
 
     model.add(Dense(2))
     model.add(Activation('softmax'))
