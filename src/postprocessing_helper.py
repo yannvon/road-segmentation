@@ -237,3 +237,32 @@ def make_img_overlay(img, predicted_img):
     overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
     new_img = Image.blend(background, overlay, 0.2)
     return new_img
+
+def round(x):
+    if(x == 0):
+        return 0.
+    else:
+        return 1.
+
+def checkImageTrainSet(model,imgs,gt_imgs):
+    dir_error = 'error_training_set/'
+    if not os.path.isdir(dir_error):
+        os.mkdir(dir_error)
+    for i in range(1, 21):
+        pimg = get_prediction(imgs[i-1],model)
+        w=pimg.shape[0]
+        h=pimg.shape[1]
+        gt_img = np.vectorize(round)(gt_imgs[i-1])
+        color_mask = np.zeros((w,h,3), dtype=np.uint8)
+        for j in range(0,w):
+            for k in range(0,h):
+                if(pimg[j,k] != gt_img[j,k]):
+                    color_mask[j,k,0] = 0
+                else:
+                    color_mask[j,k,0] = constants.PIXEL_DEPTH
+        img8 = img_float_to_uint8(imgs[i-1])
+        background = Image.fromarray(img8, 'RGB').convert("RGBA")
+        overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
+        new_img = Image.blend(background, overlay, 0.5)
+        new_img.save(dir_error + "error_" + str(i) + ".png")
+       
