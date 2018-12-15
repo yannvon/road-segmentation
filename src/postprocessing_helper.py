@@ -143,7 +143,7 @@ def make_img_overlay(img, predicted_img):
     return new_img
 
 # Get prediction for given input image 
-def get_prediction(img,model,window_size):
+def get_prediction(img, model, window_size):
     data = numpy.asarray(create_windows(img, window_size))
     output_prediction = model.predict(data)
     img_prediction = label_to_img(img.shape[0], img.shape[1], constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE, output_prediction)
@@ -155,7 +155,7 @@ def get_prediction_with_mask(filename, image_idx, model, window_size):
     imageid = "satImage_%.3d" % image_idx
     image_filename = filename + imageid + ".png"
     img = mpimg.imread(image_filename)
-    img_prediction = get_prediction(img,model,window_size)
+    img_prediction = get_prediction(img, model, window_size)
     cimg = concatenate_images(img, img_prediction)
     return cimg
 

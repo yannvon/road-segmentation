@@ -97,8 +97,8 @@ class VGGModel:
         
         self.model = model
         
-        adam_optimizer = Adam(lr=0.01)
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        adam_optimizer = Adam(lr=0.001)
+        self.model.compile(adam_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
         
         

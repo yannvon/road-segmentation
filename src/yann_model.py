@@ -131,7 +131,8 @@ class YannModel:
                     epochs=epochs,
                     callbacks = [early_stop_callback],
                     class_weight=c_weight,
-                    validation_steps=len(self.validation_data_split)/16)
+                    validation_steps=len(self.validation_data_split)/16,
+                    use_multiprocessing=True)
         
     
     def generate_submission(self):

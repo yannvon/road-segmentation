@@ -28,10 +28,10 @@ def create_windows(im, window_size):
     is_2d = len(im.shape) < 3
     imgwidth = im.shape[0]
     imgheight = im.shape[1]
-    padSize = (window_size-constants.IMG_PATCH_SIZE)//2
-    padded = pad_image(im,padSize)
-    for i in range(padSize,imgheight+padSize,constants.IMG_PATCH_SIZE):
-        for j in range(padSize,imgwidth+padSize,constants.IMG_PATCH_SIZE):
+    padSize = (window_size - constants.IMG_PATCH_SIZE)//2
+    padded = pad_image(im, padSize)
+    for i in range(padSize, imgheight + padSize, constants.IMG_PATCH_SIZE):
+        for j in range(padSize,imgwidth + padSize, constants.IMG_PATCH_SIZE):
             if is_2d:
                 im_patch = padded[j-padSize:j+constants.IMG_PATCH_SIZE+padSize, i-padSize:i+constants.IMG_PATCH_SIZE+padSize]
             else:
@@ -40,7 +40,7 @@ def create_windows(im, window_size):
     return list_patches
 
 #pad an image 
-def pad_image(img,padSize):
+def pad_image(img, padSize):
     is_2d = len(img.shape) < 3
     if is_2d:
         return np.lib.pad(img,((padSize,padSize),(padSize,padSize)),'reflect')
@@ -60,9 +60,8 @@ def rot(image, xy, angle):
             -org[0]*np.sin(a) + org[1]*np.cos(a) ])
     return im_rot
 
-def image_generator(images, ground_truths, batch_size = 64):
+def image_generator(images, ground_truths, window_size, batch_size = 64):
     np.random.seed(0)
-    window_size = 48
     imgWidth = images[0].shape[0]
     imgHeight = images[0].shape[1]
     half_patch = constants.IMG_PATCH_SIZE // 2
@@ -116,7 +115,7 @@ def image_generator(images, ground_truths, batch_size = 64):
             if(np.random.randint(0, 2)):
                 x = np.fliplr(x)
             
-            label = [1., 0.] if (np.array([np.mean(y)]) >= constants.FOREGROUND_THRESHOLD) else [0., 1.]
+            label = [0., 1.] if (np.array([np.mean(y)]) > constants.FOREGROUND_THRESHOLD) else [1., 0.]
             
             batch_input.append(x)
             batch_output.append(label)
