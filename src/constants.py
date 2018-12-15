@@ -1,8 +1,6 @@
 """ Constants taken from the template file """
 
 """
-PIXEL_DEPTH = 255
-NUM_LABELS = 2
 TRAINING_SIZE = 20
 VALIDATION_SIZE = 5  # Size of the validation set.
 SEED = 66478  # Set to None for random seed.
@@ -16,4 +14,5 @@ RECORDING_STEP = 1000
 IMG_PATCH_SIZE = 16
 NUM_CHANNELS = 3 # RGB images
 FOREGROUND_THRESHOLD = 0.25  # percentage of pixels > 1 required to assign a foreground label to a patch
-
+PIXEL_DEPTH = 255
+NUM_LABELS = 2
