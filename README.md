@@ -53,9 +53,9 @@ Here are some other tips that might be useful to you :
 ### Useful commands
 
 ```
-ssh -i "aws_key.pem" ubuntu@ec2-54-159-38-26.compute-1.amazonaws.com
+ssh -i "benno_key.pem" ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
 
-ssh -i "aws_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-54-159-38-26.compute-1.amazonaws.com
+ssh -i "benno_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
 
 http://127.0.0.1:8157 # Not HTTPS !
 
@@ -63,6 +63,7 @@ source activate tensorflow_p36
 
 pip install opencv-python
 
+git clone https://github.com/yannvon/road-segmentation.git
 
 ```
 
