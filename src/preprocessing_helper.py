@@ -27,10 +27,8 @@ def create_windows(im, window_size):
     imgheight = im.shape[1]
     padSize = (window_size-constants.IMG_PATCH_SIZE)//2
     padded = pad_image(im,padSize)
-    print(padded.shape)
     for i in range(padSize,imgheight+padSize,constants.IMG_PATCH_SIZE):
         for j in range(padSize,imgwidth+padSize,constants.IMG_PATCH_SIZE):
-            print(i,j)
             if is_2d:
                 im_patch = padded[j-padSize:j+constants.IMG_PATCH_SIZE+padSize, i-padSize:i+constants.IMG_PATCH_SIZE+padSize]
             else:

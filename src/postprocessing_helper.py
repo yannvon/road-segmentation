@@ -34,14 +34,16 @@ def extract_data(filename, num_images, window_size):
     data = [img_patches[i][j] for i in range(len(img_patches)) for j in range(len(img_patches[i]))]
 
     return numpy.asarray(data)
-        
-# Assign a label to a patch v
+
+
+       
+#Assign a label to a patch v
 def value_to_class(v):
-    df = numpy.sum(v)
-    if df > constants.FOREGROUND_THRESHOLD:
-        return [0, 1]
-    else:
-        return [1, 0]
+   df = numpy.sum(v)
+   if df > constants.FOREGROUND_THRESHOLD:
+       return [0, 1]
+   else:
+       return [1, 0]
 
 # Extract label images
 def extract_labels(filename, num_images):
@@ -66,28 +68,32 @@ def extract_labels(filename, num_images):
     return labels.astype(numpy.float32)
 
 
-def error_rate(predictions, labels):
-    """Return the error rate based on dense predictions and 1-hot labels."""
-    return 100.0 - (
-        100.0 *
-        numpy.sum(numpy.argmax(predictions, 1) == numpy.argmax(labels, 1)) /
-        predictions.shape[0])
+#FIXME useless?
+# def error_rate(predictions, labels):
+#     """Return the error rate based on dense predictions and 1-hot labels."""
+#     return 100.0 - (
+#         100.0 *
+#         numpy.sum(numpy.argmax(predictions, 1) == numpy.argmax(labels, 1)) /
+#         predictions.shape[0])
 
-# Write predictions from neural network to a file
-def write_predictions_to_file(predictions, labels, filename):
-    max_labels = numpy.argmax(labels, 1)
-    max_predictions = numpy.argmax(predictions, 1)
-    file = open(filename, "w")
-    n = predictions.shape[0]
-    for i in range(0, n):
-        file.write(max_labels(i) + ' ' + max_predictions(i))
-    file.close()
+#FIXME useless?
+# # Write predictions from neural network to a file
+# def write_predictions_to_file(predictions, labels, filename):
+#     max_labels = numpy.argmax(labels, 1)
+#     max_predictions = numpy.argmax(predictions, 1)
+#     file = open(filename, "w")
+#     n = predictions.shape[0]
+#     for i in range(0, n):
+#         file.write(max_labels(i) + ' ' + max_predictions(i))
+#     file.close()
 
-# Print predictions from neural network
-def print_predictions(predictions, labels):
-    max_labels = numpy.argmax(labels, 1)
-    max_predictions = numpy.argmax(predictions, 1)
-    print (str(max_labels) + ' ' + str(max_predictions))
+#FIXME
+# # Print predictions from neural network
+# def print_predictions(predictions, labels):
+#     max_labels = numpy.argmax(labels, 1)
+#     max_predictions = numpy.argmax(predictions, 1)
+#     print (str(max_labels) + ' ' + str(max_predictions))
+
 
 # Convert array of labels to an image
 def label_to_img(imgwidth, imgheight, w, h, labels):
@@ -95,13 +101,14 @@ def label_to_img(imgwidth, imgheight, w, h, labels):
     idx = 0
     for i in range(0,imgheight,h):
         for j in range(0,imgwidth,w):
-            if labels[idx][0] > 0.5: # FIXME make this cleaner.
+            if labels[idx][0] > 0.5: # FIXME make something cleaner?
                 l = 1
             else:
                 l = 0
             array_labels[j:j+w, i:i+h] = l
             idx = idx + 1
     return array_labels
+
 
 def img_float_to_uint8(img):
     rimg = img - numpy.min(img)
@@ -129,7 +136,6 @@ def make_img_overlay(img, predicted_img):
     h = img.shape[1]
     color_mask = numpy.zeros((w, h, 3), dtype=numpy.uint8)
     color_mask[:,:,0] = predicted_img*constants.PIXEL_DEPTH
-
     img8 = img_float_to_uint8(img)
     background = Image.fromarray(img8, 'RGB').convert("RGBA")
     overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
@@ -139,8 +145,7 @@ def make_img_overlay(img, predicted_img):
 # Get prediction for given input image 
 def get_prediction(img,model,window_size):
     data = numpy.asarray(create_windows(img, window_size))
-    output = model.predict(data)
-    output_prediction = output
+    output_prediction = model.predict(data)
     img_prediction = label_to_img(img.shape[0], img.shape[1], constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE, output_prediction)
     return img_prediction
 
@@ -150,10 +155,8 @@ def get_prediction_with_mask(filename, image_idx, model, window_size):
     imageid = "satImage_%.3d" % image_idx
     image_filename = filename + imageid + ".png"
     img = mpimg.imread(image_filename)
-
     img_prediction = get_prediction(img,model,window_size)
     cimg = concatenate_images(img, img_prediction)
-    print(cimg.shape)
     return cimg
 
 # Get prediction overlaid on the original image for given input file
@@ -162,7 +165,6 @@ def get_prediction_with_overlay(filename, image_idx, model, window_size):
     imageid = "satImage_%.3d" % image_idx
     image_filename = filename + imageid + ".png"
     img = mpimg.imread(image_filename)
-
     img_prediction = get_prediction(img,model, window_size)
     oimg = make_img_overlay(img, img_prediction)
 
@@ -181,9 +183,9 @@ def mask_to_submission_strings(img_filename):
     img_number = int(re.search(r"\d+", img_filename).group(0))
     im = mpimg.imread(img_filename)
     patch_size = 16
-    for j in range(0, im.shape[1], patch_size):
-        for i in range(0, im.shape[0], patch_size):
-            patch = im[i:i + patch_size, j:j + patch_size]
+    for j in range(0, im.shape[1], constants.IMG_PATCH_SIZE):
+        for i in range(0, im.shape[0], constants.IMG_PATCH_SIZE):
+            patch = im[i:i + constants.IMG_PATCH_SIZE, j:j + constants.IMG_PATCH_SIZE]
             label = patch_to_label(patch)
             yield("{:03d}_{}_{},{}".format(img_number, j, i, label))
 
@@ -198,18 +200,19 @@ def masks_to_submission(submission_filename, *image_filenames):
 
 #load test image test them and return submission     
 def createSubmission(model, window_size):
-    submission_filename = 'dummy_submission.csv'
+    submission_filename = 'submission.csv'
     image_filenames = []
     prediction_test_dir = "predictions_test/"
     if not os.path.isdir(prediction_test_dir):
         os.mkdir(prediction_test_dir)
     pred_filenames = []
-    for i in range(1, 51):
+    for i in range(1, constants.TEST_SIZE+1):
         image_filename = '../dataset/test_set_images/test_' + str(i) +"/test_"+ str(i) +".png"
         image_filenames.append(image_filename)
-    test_imgs = [load_image(image_filenames[i]) for i in range(50)]
-    for i in range(50):
+    test_imgs = [load_image(image_filenames[i]) for i in range(constants.TEST_SIZE)]
+    for i in range(constants.TEST_SIZE):
         pimg = get_prediction(test_imgs[i],model,window_size)
+        #save prediction next to the image
         cimg = concatenate_images(test_imgs[i], pimg)
         Image.fromarray(cimg).save(prediction_test_dir + "prediction_mask_" + str(i) + ".png")
         w = pimg.shape[0]
@@ -231,19 +234,20 @@ def make_img_overlay(img, predicted_img):
     h = img.shape[1]
     color_mask = numpy.zeros((w, h, 3), dtype=numpy.uint8)
     color_mask[:,:,0] = predicted_img*255
-
     img8 = img_float_to_uint8(img)
     background = Image.fromarray(img8, 'RGB').convert("RGBA")
     overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
     new_img = Image.blend(background, overlay, 0.2)
     return new_img
 
+#Method to take care of the values that are 253 or 254 on the groundtruth images 
 def round(x):
-    if(x == 0):
+    if(x < 0.5):
         return 0.
     else:
         return 1.
 
+#create image with the errors of the prediction highlighted
 def checkImageTrainSet(model,imgs,gt_imgs):
     dir_error = 'error_training_set/'
     if not os.path.isdir(dir_error):

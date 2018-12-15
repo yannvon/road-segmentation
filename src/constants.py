@@ -11,6 +11,7 @@ RECORDING_STEP = 1000
 # Set image patch size in pixels
 # IMG_PATCH_SIZE should be a multiple of 4
 # image size should be an integer multiple of this number!
+TEST_SIZE = 50
 IMG_PATCH_SIZE = 16
 NUM_CHANNELS = 3 # RGB images
 FOREGROUND_THRESHOLD = 0.25  # percentage of pixels > 1 required to assign a foreground label to a patch
