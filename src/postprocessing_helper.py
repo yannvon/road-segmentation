@@ -39,11 +39,11 @@ def extract_data(filename, num_images, window_size):
        
 #Assign a label to a patch v
 def value_to_class(v):
-   df = numpy.sum(v)
-   if df > constants.FOREGROUND_THRESHOLD:
-       return [0, 1]
-   else:
-       return [1, 0]
+    df = numpy.sum(v)
+    if df > constants.FOREGROUND_THRESHOLD:
+        return [0, 1]
+    else:
+        return [1, 0]
 
 # Extract label images
 def extract_labels(filename, num_images):

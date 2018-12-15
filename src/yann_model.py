@@ -28,76 +28,47 @@ from postprocessing_helper import *
 class YannModel:
     """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 48
+    WINDOW_SIZE = 80
     OUTPUT_FILENAME = "yann_model"
 
     def __init__(self):
 
-        ##Parameters
-        model = Sequential()
-        kernel_size = (3,3)
-        pool_size = (2,2)
-        alpha_relu = 0.1
-        regularizer = 1e-6
+        _input = Input((80,80,3)) 
 
-        #Size of input matrix
-        #To change according to the shape
-        shape = (48, 48, 3)
-        model = Sequential()
+        conv1  = Conv2D(filters=64, kernel_size=(3,3), padding="same", activation="relu")(_input)
+        conv2  = Conv2D(filters=64, kernel_size=(3,3), padding="same", activation="relu")(conv1)
+        pool1  = MaxPooling2D((2, 2))(conv2)
 
+        conv3  = Conv2D(filters=128, kernel_size=(3,3), padding="same", activation="relu")(pool1)
+        conv4  = Conv2D(filters=128, kernel_size=(3,3), padding="same", activation="relu")(conv3)
+        pool2  = MaxPooling2D((2, 2))(conv4)
 
-        #ITERATION 1
+        conv5  = Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu")(pool2)
+        conv6  = Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu")(conv5)
+        conv7  = Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu")(conv6)
+        pool3  = MaxPooling2D((2, 2))(conv7)
 
-        #Add convolution 
-        model.add(Convolution2D(64,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(64,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
+        conv8  = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(pool3)
+        conv9  = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(conv8)
+        conv10 = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(conv9)
+        pool4  = MaxPooling2D((2, 2))(conv10)
 
-        model.add(Convolution2D(128,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(128,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
+        conv11 = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(pool4)
+        conv12 = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(conv11)
+        conv13 = Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu")(conv12)
+        pool5  = MaxPooling2D((2, 2))(conv13)
 
-        model.add(Convolution2D(256,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(256,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-
-        model.add(Flatten())
-
-        model.add(Dense(2))
-        model.add(Activation('softmax'))
+        flat   = Flatten()(pool5)
+        dense1 = Dense(4096, activation="relu")(flat)
+        dense2 = Dense(4096, activation="relu")(dense1)
+        output = Dense(1000, activation="softmax")(dense2)
+        classification = Dense(2, activation="softmax")(output)
         
-        self.model = model
         
-        adam_optimizer = Adam(lr=0.01)
+        vgg16_model  = Model(inputs=_input, outputs=classification)          
+        
+        self.model = vgg16_model
+        
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
         
@@ -126,9 +97,8 @@ class YannModel:
         self.validation_label_split = self.train_labels[split_index:len(self.train_data)]
         
         # Step 2: Give weights to classes
-        # FIXME correct?
-        c_weight = {1: 1., 
-                    0: 3.}
+        c_weight = {1: 2.8, 
+                    0: 1.}
         
         # (depracated) Step 2 : other option, cut out data !
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)

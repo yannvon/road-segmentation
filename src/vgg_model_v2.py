@@ -25,7 +25,7 @@ from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class VGGModel:
+class VGGModel2:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 48
@@ -102,28 +102,27 @@ class VGGModel:
 
         
         
-    def load_data(self, train_data_filename, train_labels_filename, training_size):
-        # Extract it into numpy arrays.
-        self.train_data = extract_data(train_data_filename, training_size, self.WINDOW_SIZE)
-        self.train_labels = extract_labels(train_labels_filename, training_size)
+    def load_data(self, image_dir, gt_dir, training_size):
+        files = os.listdir(image_dir)
+        n = len(files)
+        print("Loading " + str(n) + " images")
+        imgs = [load_image(image_dir + files[i]) for i in range(n)]
+        print(imgs[0][2])
+
+        print("Loading " + str(n) + " images")
+        gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
+        print(files[0])
+
+        self.X_train = imgs
+        self.Y_train = gt_imgs
         
         
 
     def train(self, epochs=30, validation_split=0.2):
         
         # Step 0: Shuffle samples
-        np.random.seed(0)
-        np.random.shuffle(self.train_data)
-        # resetting the seed allows for an identical shuffling between y and x
-        np.random.seed(0)
-        np.random.shuffle(self.train_labels)
 
         # Step 1: Split into validation and training set     
-        split_index = int(len(self.train_data) * (1 - validation_split))
-        self.train_data_split = self.train_data[0:split_index]
-        self.validation_data_split = self.train_data[split_index:len(self.train_data)]
-        self.train_label_split = self.train_labels[0:split_index]
-        self.validation_label_split = self.train_labels[split_index:len(self.train_data)]
         
         # Step 2: Give weights to classes
         # FIXME correct?
@@ -134,19 +133,7 @@ class VGGModel:
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
 
         # Step 3: Greate Generators
-        train_datagen = ImageDataGenerator(
-            #rotation_range=180,
-            horizontal_flip=True,
-            vertical_flip=True)
-
-        validation_datagen = ImageDataGenerator()
-            #rotation_range=180,
-            #horizontal_flip=True,
-            #vertical_flip=True)
-            
-        train_generator = train_datagen.flow(self.train_data_split, self.train_label_split, batch_size=32)
-        validation_generator = validation_datagen.flow(self.validation_data_split, 
-                                                       self.validation_label_split, batch_size=32)
+        generator = image_generator(self.X_train, self.Y_train, batch_size = 32)
 
         
         # Step 4: Early stop
@@ -155,13 +142,11 @@ class VGGModel:
 
         # Finally, train the model !
         # Training
-        self.model.fit_generator(train_generator,
-                    validation_data=validation_generator,
-                    steps_per_epoch=len(self.train_data_split)/32,
+        self.model.fit_generator(generator,
+                    steps_per_epoch=len(self.X_train * 16 * 16)/32, # FIXME how many steps per epoch?
                     epochs=epochs,
                     callbacks = [early_stop_callback],
-                    class_weight=c_weight,
-                    validation_steps=len(self.validation_data_split)/16)
+                    class_weight=c_weight)
         
     
     def generate_submission(self):
