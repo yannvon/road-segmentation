@@ -184,10 +184,10 @@ class VGGModel:
         # source https://machinelearningmastery.com/save-load-keras-deep-learning-models/
         # serialize model to JSON
         model_json = self.model.to_json()
-        with open(OUTPUT_FILENAME + ".json", "w") as json_file:
+        with open(self.OUTPUT_FILENAME + ".json", "w") as json_file:
             json_file.write(model_json)
         # serialize weights to HDF5
-        self.model.save_weights(OUTPUT_FILENAME + ".h5")
+        self.model.save_weights(self.OUTPUT_FILENAME + ".h5")
         print("Saved model to disk")
         
     def load(self):
