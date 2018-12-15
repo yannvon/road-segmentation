@@ -6,32 +6,100 @@ from keras.models import model_from_json
 from sklearn.metrics import f1_score
 import numpy as np
 
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.layers import LeakyReLU
+from keras.regularizers import l2
+
+# FIXME too many imports, remove unnecessary
+from VGG import VGGModel
+from keras import callbacks
+from keras.applications.vgg19 import VGG19
+from keras.layers import Input, Flatten, Dense
+from keras.models import Model
+from keras.optimizers import Adam
+
 
 import constants
 from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class BasicModel:
-    """ A simple basic model following the provided template """
+class YannModel:
+    """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 16
-    OUTPUT_FILENAME = "basic_model"
+    WINDOW_SIZE = 48
+    OUTPUT_FILENAME = "yann_model"
 
     def __init__(self):
 
-        # create model
-        self.model = Sequential()
+        ##Parameters
+        model = Sequential()
+        kernel_size = (3,3)
+        pool_size = (2,2)
+        alpha_relu = 0.1
+        regularizer = 1e-6
 
-        # add model layers
-        self.model.add(Conv2D(16, kernel_size=constants.IMG_PATCH_SIZE, activation='relu',
-                              input_shape=(constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE, constants.NUM_CHANNELS)))
-        self.model.add(Flatten())
-        self.model.add(Dense(2, activation='softmax'))
+        #Size of input matrix
+        #To change according to the shape
+        shape = (48, 48, 3)
+        model = Sequential()
 
-        # compile model using accuracy to measure model performance
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+        #ITERATION 1
+
+        #Add convolution 
+        model.add(Convolution2D(64,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(LeakyReLU(alpha_relu))
+        model.add(MaxPooling2D(pool_size))
+        model.add(Convolution2D(64,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(Dropout(0.1))
+        model.add(LeakyReLU(alpha_relu))
+        model.add(MaxPooling2D(pool_size))
+
+        model.add(Convolution2D(128,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(LeakyReLU(alpha_relu))
+        model.add(MaxPooling2D(pool_size))
+        model.add(Convolution2D(128,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(Dropout(0.1))
+        model.add(LeakyReLU(alpha_relu))
+        model.add(MaxPooling2D(pool_size))
+
+        model.add(Convolution2D(256,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(LeakyReLU(alpha_relu))
+        model.add(MaxPooling2D(pool_size))
+        model.add(Convolution2D(256,
+                                kernel_size,
+                                padding='same',
+                                input_shape=shape))
+        model.add(Dropout(0.1))
+        model.add(LeakyReLU(alpha_relu))
+
+        model.add(Flatten())
+
+        model.add(Dense(2))
+        model.add(Activation('softmax'))
         
+        self.model = model
+        
+        adam_optimizer = Adam(lr=0.01)
+        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
         
         
     def load_data(self, train_data_filename, train_labels_filename, training_size):
@@ -41,7 +109,7 @@ class BasicModel:
         
         
 
-    def train(self, epochs=100, validation_split=0.1):
+    def train(self, epochs=30, validation_split=0.2):
         
         # Step 0: Shuffle samples
         np.random.seed(0)
@@ -77,7 +145,8 @@ class BasicModel:
             #vertical_flip=True)
             
         train_generator = train_datagen.flow(self.train_data_split, self.train_label_split, batch_size=32)
-        validation_generator = validation_datagen.flow(self.validation_data_split, self.validation_label_split, batch_size=32)
+        validation_generator = validation_datagen.flow(self.validation_data_split, 
+                                                       self.validation_label_split, batch_size=32)
 
         
         # Step 4: Early stop
