@@ -1,7 +1,7 @@
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Flatten
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard, CSVLogger
 from keras.models import model_from_json
 from sklearn.metrics import f1_score
 import numpy as np
@@ -28,7 +28,7 @@ from postprocessing_helper import *
 class VGGModel2:
     """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 100
+    WINDOW_SIZE = 80
     OUTPUT_FILENAME = "vgg_model"
 
     def __init__(self):
@@ -116,7 +116,6 @@ class VGGModel2:
         self.X_train = imgs
         self.Y_train = gt_imgs
         
-        
 
     def train(self, epochs=30, validation_split=0.2):
         
@@ -128,7 +127,6 @@ class VGGModel2:
         np.random.shuffle(self.Y_train)
 
         # Step 1: Split into validation and training set
-        validation_split = 0.15
         split_index = int(len(self.X_train) * (1 - validation_split))
         self.train_data_split = self.X_train[0:split_index]
         self.validation_data_split = self.X_train[split_index:len(self.X_train)]
@@ -156,16 +154,16 @@ class VGGModel2:
 
         
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
+        early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
                                             mode='max', restore_best_weights=True)
         # Taken from Github model
         # FIXME does this work for accuracy on training set?
-        lr_callback = ReduceLROnPlateau(monitor='acc', factor=0.5, patience=5,
+        lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
         # Save checkpoints
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
-        checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
+        checkpoint_callback = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
         
         # Save data for TensorBoard
@@ -179,23 +177,26 @@ class VGGModel2:
         # Training
         self.model.fit_generator(train_generator,
                     validation_data = validation_generator,
-                    steps_per_epoch=len(self.X_train * 16 * 16)/32, # FIXME how many steps per epoch?
+                    steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback],
                     class_weight=c_weight,
                     use_multiprocessing=True,
-                    validation_steps=len(self.validation_data_split)/16)
+                    validation_steps=len(self.validation_data_split) * 16 * 16 / 32)
         
             
-    def generate_images(self, prediction_training_dir, train_data_filename):
+    def generate_images(self, imgs, gt_imgs):
+        prediction_training_dir = "predictions_training/"
         if not os.path.isdir(prediction_training_dir):
             os.mkdir(prediction_training_dir)
         
         for i in range(1, constants.TRAINING_SIZE+1):
-            pimg = get_prediction_with_mask(train_data_filename, i, self.model, self.WINDOW_SIZE)
+            pimg = get_prediction_with_mask(imgs[i-1], self.model, self.WINDOW_SIZE)
             Image.fromarray(pimg).save(prediction_training_dir + "prediction_" + str(i) + ".png")
-            oimg = get_prediction_with_overlay(train_data_filename, i, self.model, self.WINDOW_SIZE)
+            oimg = get_prediction_with_overlay(imgs[i-1], self.model, self.WINDOW_SIZE)
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
+        
+        checkImageTrainSet(self.model, imgs, gt_imgs)
         
         
     def generate_submission(self):
@@ -220,8 +221,9 @@ class VGGModel2:
         #loaded_model_json = json_file.read()
         #json_file.close()
         #loaded_model = model_from_json(loaded_model_json)
+        
         ##load weights into new model
-        #loaded_model.load_weights("model.h5")
+        self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
         #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
-        #print("Loaded model from disk")
+        print("Loaded model from disk")
         
