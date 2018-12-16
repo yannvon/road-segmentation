@@ -48,10 +48,10 @@ def pad_image(img, padSize):
         return np.lib.pad(img,((padSize,padSize),(padSize,padSize),(0,0)),'reflect')
     
     
-#source for rotation
+#source for function rot(image, xy, angle)
 #https://stackoverflow.com/questions/46657423/rotated-image-coordinates-after-scipy-ndimage-interpolation-rotate
 def rot(image, xy, angle):
-    im_rot = rotate(image,angle, reshape=False) 
+    im_rot = rotate(image, angle, reshape=False) 
     org_center = (np.array(image.shape[:2][::-1])-1)/2.
     rot_center = (np.array(im_rot.shape[:2][::-1])-1)/2.
     org = xy-org_center
@@ -70,35 +70,40 @@ def image_generator(images, ground_truths, window_size, batch_size = 64):
     paddedImages = []
     for image in images:
         paddedImages.append(pad_image(image,padSize))
-        
+    
+    rotatedImages = []
+    rotatedGroundTruths = []
+    
+    # We will augment the dataset x8, by including every 45 degree rotations
+    # for rotations not multiple of 90 degree, the image needs to be interpolated, hence we limit the position
+    # of the window to be inside the original image. We can visualize the authorised positions as a square of
+    # side length 1/sqrt(2) * the original side length of the image.
+    rotation_thresh = 4 * len(images)
+    rotations = [0, 90, 180, 270, 45, 135, 225, 315]
+    for i in range(len(images)):
+        for j in range(8):
+            rotatedImages.append(rot(paddedImages[i], np.array([imgWidth, imgHeight]), rotations[j]))
+            rotatedGroundTruths.append(rot(ground_truths[i], np.array([imgWidth, imgHeight]), rotations[j]))
+    
     while True:
         batch_input = []
         batch_output = [] 
-        
-        #rotates the whole batch for better performance
-        randomIndex = np.random.randint(0, len(images))  
-        img = paddedImages[randomIndex]
-        gt = ground_truths[randomIndex]
-        
-        # rotate with probability 10 / 100
-        random_rotation = 0
-        if (np.random.randint(0, 100) < 10):
-            rotations = [90, 180, 270, 45, 135, 225, 315]
-            random_rotation = np.random.randint(0, 7)
-            img = rot(img, np.array([imgWidth, imgHeight]), rotations[random_rotation])
-            gt = rot(gt, np.array([imgWidth, imgHeight]), rotations[random_rotation]) 
-        
+                
         for i in range(batch_size):
             x = np.empty((window_size, window_size, 3))
             y = np.empty((window_size, window_size, 3))
             
+            randomIndex = np.random.randint(0, len(rotatedImages))  
+            img = rotatedImages[randomIndex]
+            gt = rotatedGroundTruths[randomIndex]
             
             # we need to limit possible centers to avoid having a window in an interpolated part of the image
             # we limit ourselves to a square of width 1/sqrt(2) smaller
-            if(random_rotation > 2):
+            if(randomIndex > rotation_thresh):
                 boundary = int((imgWidth - imgWidth / np.sqrt(2)) / 2)
             else:
                 boundary = 0
+                
             center_x = np.random.randint(half_patch + boundary, imgWidth  - half_patch - boundary)
             center_y = np.random.randint(half_patch + boundary, imgHeight - half_patch - boundary)
             
