@@ -150,24 +150,15 @@ def get_prediction(img, model, window_size):
     return img_prediction
 
 # Get a concatenation of the prediction and image for given input file
-def get_prediction_with_mask(filename, image_idx, model, window_size):
-
-    imageid = "satImage_%.3d" % image_idx
-    image_filename = filename + imageid + ".png"
-    img = mpimg.imread(image_filename)
+def get_prediction_with_mask(img, model, window_size):
     img_prediction = get_prediction(img, model, window_size)
     cimg = concatenate_images(img, img_prediction)
     return cimg
 
 # Get prediction overlaid on the original image for given input file
-def get_prediction_with_overlay(filename, image_idx, model, window_size):
-
-    imageid = "satImage_%.3d" % image_idx
-    image_filename = filename + imageid + ".png"
-    img = mpimg.imread(image_filename)
+def get_prediction_with_overlay(img, model, window_size):
     img_prediction = get_prediction(img,model, window_size)
     oimg = make_img_overlay(img, img_prediction)
-
     return oimg
 
 # assign a label to a patch
@@ -252,7 +243,7 @@ def checkImageTrainSet(model,imgs,gt_imgs):
     dir_error = 'error_training_set/'
     if not os.path.isdir(dir_error):
         os.mkdir(dir_error)
-    for i in range(1, 21):
+    for i in range(1, 101):
         pimg = get_prediction(imgs[i-1],model)
         w=pimg.shape[0]
         h=pimg.shape[1]

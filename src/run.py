@@ -3,7 +3,7 @@ from basic_model import BasicModel
 from vgg_model_v2 import VGGModel2
 from vgg_model import VGGModel
 from yann_model import YannModel
-from vgg_model_Benno import VGGModel_Benno
+from new_model import newModel
 from preprocessing_helper import *
 from postprocessing_helper import *
 
@@ -29,22 +29,21 @@ print(files[0])
 
 # Choose model
 # model = YannModel()
-#model = VGGModel2()
-model = VGGModel_Benno()
+# model = VGGModel2()
 # model = BasicModel()
 # model = CNNModel()
 # model = TeslaModelS()
+model = newModel()
 
 # Option 2: Model loads files itself
 model.load_data(image_dir, gt_dir, constants.TRAINING_SIZE)
 
 # Train model
-model.train(epochs=120, validation_split=0.1)
+model.train(epochs=1, validation_split=0.1)
 
 # Create Training set images
 # Set directory to save images
-prediction_training_dir = "predictions_training/"
-model.generate_images(prediction_training_dir, image_dir)
+model.generate_images(imgs, gt_imgs)
 
 # Predict Test Set -> Create submission and save Images
 model.generate_submission()
