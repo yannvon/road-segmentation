@@ -28,7 +28,7 @@ from postprocessing_helper import *
 class VGGModel2:
     """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 80
+    WINDOW_SIZE = 100
     OUTPUT_FILENAME = "vgg_model"
 
     def __init__(self):
@@ -137,7 +137,7 @@ class VGGModel2:
 
         
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=0, 
+        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
                                             mode='max', restore_best_weights=True)
         # Taken from Github model
         # FIXME does this work for accuracy on training set?
@@ -148,12 +148,20 @@ class VGGModel2:
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
         checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
+        
+        # Save data for TensorBoard
+        # Check here for more info: https://github.com/keras-team/keras/blob/master/keras/callbacks.py#L669
+        tensorboard_callback = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, 
+                                          write_graph=True, write_grads=True,
+                                          write_images=True, embeddings_freq=0, embeddings_layer_names=None,
+                                          embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+
         # Finally, train the model !
         # Training
         self.model.fit_generator(generator,
                     steps_per_epoch=len(self.X_train * 16 * 16)/32, # FIXME how many steps per epoch?
                     epochs=epochs,
-                    callbacks = [early_stop_callback, lr_callback],
+                    callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback],
                     class_weight=c_weight,
                     use_multiprocessing=True)
         
