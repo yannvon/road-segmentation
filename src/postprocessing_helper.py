@@ -247,8 +247,8 @@ def checkImageTrainSet(model,imgs,gt_imgs,window_size):
         pimg = get_prediction(imgs[i-1], model, window_size)
         w=pimg.shape[0]
         h=pimg.shape[1]
-        gt_img = np.vectorize(round)(gt_imgs[i-1])
-        color_mask = np.zeros((w,h,3), dtype=np.uint8)
+        gt_img = numpy.vectorize(round)(gt_imgs[i-1])
+        color_mask = numpy.zeros((w,h,3), dtype=numpy.uint8)
         for j in range(0,w):
             for k in range(0,h):
                 if(pimg[j,k] != gt_img[j,k]):
