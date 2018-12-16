@@ -12,7 +12,6 @@ from keras.layers import LeakyReLU
 from keras.regularizers import l2
 
 # FIXME too many imports, remove unnecessary
-from VGG import VGGModel
 from keras import callbacks
 from keras.applications.vgg19 import VGG19
 from keras.layers import Input, Flatten, Dense
@@ -199,7 +198,7 @@ class newModel:
             oimg = get_prediction_with_overlay(imgs[i-1], self.model, self.WINDOW_SIZE)
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
         
-        checkImageTrainSet(self.model, imgs, gt_imgs)
+        checkImageTrainSet(self.model, imgs, gt_imgs, self.WINDOW_SIZE)
         
     def generate_submission(self):
         createSubmission(self.model, self.WINDOW_SIZE)

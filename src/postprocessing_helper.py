@@ -239,12 +239,12 @@ def round(x):
         return 1.
 
 #create image with the errors of the prediction highlighted
-def checkImageTrainSet(model,imgs,gt_imgs):
+def checkImageTrainSet(model,imgs,gt_imgs,window_size):
     dir_error = 'error_training_set/'
     if not os.path.isdir(dir_error):
         os.mkdir(dir_error)
     for i in range(1, 101):
-        pimg = get_prediction(imgs[i-1],model)
+        pimg = get_prediction(imgs[i-1], model, window_size)
         w=pimg.shape[0]
         h=pimg.shape[1]
         gt_img = np.vectorize(round)(gt_imgs[i-1])
