@@ -121,8 +121,19 @@ class VGGModel2:
     def train(self, epochs=30, validation_split=0.2):
         
         # Step 0: Shuffle samples
+        np.random.seed(0)
+        np.random.shuffle(self.X_train)
+        # resetting the seed allows for an identical shuffling between y and x
+        np.random.seed(0)
+        np.random.shuffle(self.Y_train)
 
-        # Step 1: Split into validation and training set     
+        # Step 1: Split into validation and training set
+        validation_split = 0.15
+        split_index = int(len(self.X_train) * (1 - validation_split))
+        self.train_data_split = self.X_train[0:split_index]
+        self.validation_data_split = self.X_train[split_index:len(self.X_train)]
+        self.train_label_split = self.Y_train[0:split_index]
+        self.validation_label_split = self.Y_train[split_index:len(self.Y_train)]    
         
         # Step 2: Give weights to classes
         # FIXME correct?
@@ -133,7 +144,15 @@ class VGGModel2:
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
 
         # Step 3: Greate Generators
-        generator = image_generator(self.X_train, self.Y_train, self.WINDOW_SIZE, batch_size = 32)
+        train_generator = image_generator(self.train_data_split,
+                                          self.train_label_split,
+                                          self.WINDOW_SIZE,
+                                          batch_size = 32)
+        
+        validation_generator = image_generator(self.validation_data_split,
+                                               self.validation_label_split,
+                                               self.WINDOW_SIZE,
+                                               batch_size = 32)
 
         
         # Step 4: Early stop and other Callbacks
@@ -158,12 +177,14 @@ class VGGModel2:
 
         # Finally, train the model !
         # Training
-        self.model.fit_generator(generator,
+        self.model.fit_generator(train_generator,
+                    validation_data = validation_generator,
                     steps_per_epoch=len(self.X_train * 16 * 16)/32, # FIXME how many steps per epoch?
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback],
                     class_weight=c_weight,
-                    use_multiprocessing=True)
+                    use_multiprocessing=True,
+                    validation_steps=len(self.validation_data_split)/16)
         
             
     def generate_images(self, prediction_training_dir, train_data_filename):
