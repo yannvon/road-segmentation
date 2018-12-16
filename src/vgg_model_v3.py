@@ -24,11 +24,11 @@ from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class newModel:
+class VGGModel3:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
-    OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "vgg_modelv3_wind" + str(WINDOW_SIZE)
 
     def __init__(self):
 
@@ -118,7 +118,7 @@ class newModel:
 
     def train(self, epochs=30, validation_split=0.2):
         
-       # Step 0: Shuffle samples
+        # Step 0: Shuffle samples
         np.random.seed(0)
         np.random.shuffle(self.X_train)
         # resetting the seed allows for an identical shuffling between y and x
@@ -146,22 +146,18 @@ class newModel:
                                           self.WINDOW_SIZE,
                                           batch_size = 32)
         
-        validation_generator = image_generator(self.validation_data_split,
-                                               self.validation_label_split,
-                                               self.WINDOW_SIZE,
-                                               batch_size = 32)
-
+        
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
+        early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
                                             mode='max', restore_best_weights=True)
         # Taken from Github model
         # FIXME does this work for accuracy on training set?
-        lr_callback = ReduceLROnPlateau(monitor='acc', factor=0.5, patience=5,
+        lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
         # Save checkpoints
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
-        checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
+        checkpoint_callback = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
         
         # Save data for TensorBoard
@@ -171,20 +167,14 @@ class newModel:
                                           write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                           embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
-        #Log each epoch in a csv file
-        csv_logger = CSVLogger(self.OUTPUT_FILENAME + '_training.log')
-
         # Finally, train the model !
-        # Training  
+        # Training
         self.model.fit_generator(train_generator,
-                    validation_data = validation_generator,
                     steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
                     epochs=epochs,
-                    callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
+                    callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback],
                     class_weight=c_weight,
-                    use_multiprocessing=True,
-                    validation_steps=len(self.validation_data_split) * 16 * 16 / 32)
-        
+                    use_multiprocessing=True)
         
             
     def generate_images(self, imgs, gt_imgs):
@@ -199,6 +189,7 @@ class newModel:
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
         
         checkImageTrainSet(self.model, imgs, gt_imgs, self.WINDOW_SIZE)
+        
         
     def generate_submission(self):
         createSubmission(self.model, self.WINDOW_SIZE)
@@ -215,6 +206,7 @@ class newModel:
         print("Saved model to disk")
         
     def load(self):
+        pass
         # FIXME
         ##load json and create model
         #json_file = open('model.json', 'r')

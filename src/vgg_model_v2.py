@@ -28,7 +28,7 @@ class VGGModel2:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
-    OUTPUT_FILENAME = "vgg_model"
+    OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
 
     def __init__(self):
 

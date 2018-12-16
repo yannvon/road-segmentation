@@ -24,11 +24,11 @@ from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class newModel:
+class DenseModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
-    OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "dense_model_wind"+ str(WINDOW_SIZE)
 
     def __init__(self):
 
@@ -58,7 +58,7 @@ class newModel:
                                 kernel_size,
                                 padding='same',
                                 input_shape=shape))
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.2))
         model.add(LeakyReLU(alpha_relu))
         model.add(MaxPooling2D(pool_size))
 
@@ -72,7 +72,7 @@ class newModel:
                                 kernel_size,
                                 padding='same',
                                 input_shape=shape))
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.2))
         model.add(LeakyReLU(alpha_relu))
         model.add(MaxPooling2D(pool_size))
 
@@ -86,20 +86,20 @@ class newModel:
                                 kernel_size,
                                 padding='same',
                                 input_shape=shape))
-        model.add(Dropout(0.1))
+        model.add(Dropout(0.3))
         model.add(LeakyReLU(alpha_relu))
-
         model.add(Flatten())
-
-        model.add(Dense(2))
-        model.add(Activation('softmax'))
         
+        # Inspired by VGG
+        model.add(Dense(512, activation="relu"))
+        model.add(Dense(512, activation="relu"))
+        model.add(Dense(2, activation="softmax"))
+       
         self.model = model
         
         adam_optimizer = Adam(lr=0.001)
         self.model.compile(optimizer=adam_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
-        
         
     def load_data(self, image_dir, gt_dir, training_size):
         files = os.listdir(image_dir)
@@ -146,11 +146,6 @@ class newModel:
                                           self.WINDOW_SIZE,
                                           batch_size = 32)
         
-        validation_generator = image_generator(self.validation_data_split,
-                                               self.validation_label_split,
-                                               self.WINDOW_SIZE,
-                                               batch_size = 32)
-
         # Step 4: Early stop and other Callbacks
         early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
                                             mode='max', restore_best_weights=True)
@@ -172,18 +167,16 @@ class newModel:
                                           embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
         #Log each epoch in a csv file
-        csv_logger = CSVLogger(self.OUTPUT_FILENAME + '_training.log')
+        csv_logger = CSVLogger(self.OUTPUT_FILENAME + '_csvlogger.log')
 
         # Finally, train the model !
         # Training  
         self.model.fit_generator(train_generator,
-                    validation_data = validation_generator,
                     steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     class_weight=c_weight,
-                    use_multiprocessing=True,
-                    validation_steps=len(self.validation_data_split) * 16 * 16 / 32)
+                    use_multiprocessing=True)
         
         
             
@@ -198,7 +191,7 @@ class newModel:
             oimg = get_prediction_with_overlay(imgs[i-1], self.model, self.WINDOW_SIZE)
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
         
-        checkImageTrainSet(self.model, imgs, gt_imgs, self.WINDOW_SIZE)
+        checkImageTrainSet(self.model, imgs, gt_imgs)
         
     def generate_submission(self):
         createSubmission(self.model, self.WINDOW_SIZE)
