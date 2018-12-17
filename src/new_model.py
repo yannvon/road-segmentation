@@ -12,7 +12,6 @@ from keras.layers import LeakyReLU
 from keras.regularizers import l2
 
 # FIXME too many imports, remove unnecessary
-from VGG import VGGModel
 from keras import callbacks
 from keras.applications.vgg19 import VGG19
 from keras.layers import Input, Flatten, Dense
@@ -28,8 +27,8 @@ from postprocessing_helper import *
 class newModel:
     """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 100
-    OUTPUT_FILENAME = "vgg_model"
+    WINDOW_SIZE = 80
+    OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
 
     def __init__(self):
 
@@ -116,13 +115,22 @@ class newModel:
         self.X_train = imgs
         self.Y_train = gt_imgs
         
-        
 
     def train(self, epochs=30, validation_split=0.2):
         
-        # Step 0: Shuffle samples
+       # Step 0: Shuffle samples
+        np.random.seed(0)
+        np.random.shuffle(self.X_train)
+        # resetting the seed allows for an identical shuffling between y and x
+        np.random.seed(0)
+        np.random.shuffle(self.Y_train)
 
-        # Step 1: Split into validation and training set     
+        # Step 1: Split into validation and training set
+        split_index = int(len(self.X_train) * (1 - validation_split))
+        self.train_data_split = self.X_train[0:split_index]
+        self.validation_data_split = self.X_train[split_index:len(self.X_train)]
+        self.train_label_split = self.Y_train[0:split_index]
+        self.validation_label_split = self.Y_train[split_index:len(self.Y_train)]    
         
         # Step 2: Give weights to classes
         # FIXME correct?
@@ -133,9 +141,16 @@ class newModel:
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
 
         # Step 3: Greate Generators
-        generator = image_generator(self.X_train, self.Y_train, self.WINDOW_SIZE, batch_size = 32)
-
+        train_generator = image_generator(self.train_data_split,
+                                          self.train_label_split,
+                                          self.WINDOW_SIZE,
+                                          batch_size = 32)
         
+        validation_generator = image_generator(self.validation_data_split,
+                                               self.validation_label_split,
+                                               self.WINDOW_SIZE,
+                                               batch_size = 32)
+
         # Step 4: Early stop and other Callbacks
         early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
                                             mode='max', restore_best_weights=True)
@@ -157,16 +172,19 @@ class newModel:
                                           embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
         #Log each epoch in a csv file
-        csv_logger = CSVLogger('training.log')
+        csv_logger = CSVLogger(self.OUTPUT_FILENAME + '_training.log')
 
         # Finally, train the model !
-        # Training
-        self.model.fit_generator(generator,
-                    steps_per_epoch=len(self.X_train * 16 * 16)/32, # FIXME how many steps per epoch?
+        # Training  
+        self.model.fit_generator(train_generator,
+                    validation_data = validation_generator,
+                    steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
                     epochs=epochs,
-                    callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback,csv_logger],
+                    callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     class_weight=c_weight,
-                    use_multiprocessing=True)
+                    use_multiprocessing=True,
+                    validation_steps=len(self.validation_data_split) * 16 * 16 / 32)
+        
         
             
     def generate_images(self, imgs, gt_imgs):
@@ -180,7 +198,7 @@ class newModel:
             oimg = get_prediction_with_overlay(imgs[i-1], self.model, self.WINDOW_SIZE)
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
         
-        checkImageTrainSet(model,imgs,gt_imgs)
+        checkImageTrainSet(self.model, imgs, gt_imgs, self.WINDOW_SIZE)
         
     def generate_submission(self):
         createSubmission(self.model, self.WINDOW_SIZE)
@@ -197,15 +215,15 @@ class newModel:
         print("Saved model to disk")
         
     def load(self):
-        pass
         # FIXME
         ##load json and create model
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()
         #json_file.close()
         #loaded_model = model_from_json(loaded_model_json)
+        
         ##load weights into new model
-        #loaded_model.load_weights("model.h5")
+        self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
         #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
-        #print("Loaded model from disk")
+        print("Loaded model from disk")
         
