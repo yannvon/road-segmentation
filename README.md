@@ -37,7 +37,34 @@ Our task is to create the following file:
 
 - **submission.csv**
 
-## How to run Keras (with GPU) on a Jupyter notebook from a EC2 (AWS) machine
+
+
+## Performance of our models
+
+### Basic model with window of 80 pixels
+
+All 200 epochs (with Early stop)
+
+| Model Description                                            | Training Accuracy | crowdAI F1 |
+| ------------------------------------------------------------ | ----------------- | ---------- |
+| 80 window Basic Model, no dense, 0.1 dropout, basic rotations | 0.972             | 0.881      |
+| 80 window Basic Model, no dense, 0.1 dropout, full rotations | 0.963             | 0.871      |
+| 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
+
+### Varying window sizes on basic model
+
+All 200 epochs (With Early stop)
+
+| Model Description                                            | Training Accuracy | crowdAI F1 |
+| ------------------------------------------------------------ | ----------------- | ---------- |
+| 64 window Basic Model, no dense, 0.2 dropout, full rotations | 0.950             | -          |
+| 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
+| 100 window Basic Model, no dense, 0.2 dropout, full rotations | 0.963             | 0.870      |
+| 120 window Basic Model, no dense, 0.2 dropout, full rotations | 0.949             | 0.826      |
+
+
+
+## How to run Keras (with GPU) on a Jupyter notebook from a EC2 (AWS) instance
 
 1. Sign-up for a AWS Educate account, or even better use the promo from the Github student pack to create a full-fledged AWS account.
 2. Go to your AWS workbench and follow [this guide](https://hackernoon.com/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac) until the end of section 3. Note that you should select "Deep Learning AMI (Ubuntu) Version 19.0 " for example from the list of community AMI's.
@@ -52,10 +79,10 @@ Here are some other tips that might be useful to you :
 
 ### Useful commands
 
-```
-ssh -i "benno_key.pem" ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
+```python
+ssh -i "aws_key.pem" ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
 
-ssh -i "benno_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
+ssh -i "aws_key.pem" -L 8157:127.0.0.1:8888 ubuntu@ec2-18-204-43-147.compute-1.amazonaws.com
 
 http://127.0.0.1:8157 # Not HTTPS !
 
@@ -66,6 +93,37 @@ pip install opencv-python
 git clone https://github.com/yannvon/road-segmentation.git
 
 ```
+
+
+
+## How to run TensorBoard on an EC2 instance
+
+We use TensorBoard to obtain direct feedback and plots from the progress of the training of the model.
+
+All we have to do is add a callback to the keras fit method, as well as running a TensorBoard server on the instance. The following commands are useful:
+
+### Useful commands
+
+```
+ ssh -i "aws_key.pem" -L 16006:127.0.0.1:6006 ubuntu@ec2-34-206-1-189.compute-1.amazonaws.com
+
+tensorboard --logdir=/home/ubuntu/road-segmentation/src/logs
+
+http://127.0.0.1:16006
+```
+
+## Alternative way to train the model
+
+```bash
+(tensorflow_p36) $ nohup python run.py > /dev/null 2>&1&
+```
+
+## Kaggle Kernels
+
+K80 for free during 6h session ! Can run many sessions at the same time !
+
+
+
 
 
 ## Our Approach
