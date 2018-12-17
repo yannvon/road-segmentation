@@ -24,11 +24,12 @@ from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class newModel:
+class NewModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
     OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
+    ROT_PROBA = [0.2,0.2,0.2,0.2,0.05,0.05,0.05,0.05] #[0, 90, 180, 270, 45, 135, 225, 315]
 
     def __init__(self):
 
@@ -144,24 +145,26 @@ class newModel:
         train_generator = image_generator(self.train_data_split,
                                           self.train_label_split,
                                           self.WINDOW_SIZE,
-                                          batch_size = 32)
+                                          batch_size = 32, 
+                                          rot_proba=self.ROT_PROBA)
         
         validation_generator = image_generator(self.validation_data_split,
                                                self.validation_label_split,
                                                self.WINDOW_SIZE,
-                                               batch_size = 32)
+                                               batch_size = 32,
+                                               rot_proba=self.ROT_PROBA)
 
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
-                                            mode='max', restore_best_weights=True)
+        early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
+                                            mode='auto', restore_best_weights=True)
         # Taken from Github model
         # FIXME does this work for accuracy on training set?
-        lr_callback = ReduceLROnPlateau(monitor='acc', factor=0.5, patience=5,
+        lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
         # Save checkpoints
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
-        checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
+        checkpoint_callback = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
         
         # Save data for TensorBoard
@@ -183,7 +186,7 @@ class newModel:
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     class_weight=c_weight,
                     use_multiprocessing=True,
-                    validation_steps=len(self.validation_data_split) * 16 * 16 / 32)
+                    validation_steps=len(self.validation_data_split) * 16 * 16 * 2 / 32)
         
         
             

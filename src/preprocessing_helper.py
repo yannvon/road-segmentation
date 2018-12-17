@@ -60,7 +60,8 @@ def rot(image, xy, angle):
             -org[0]*np.sin(a) + org[1]*np.cos(a) ])
     return im_rot
 
-def image_generator(images, ground_truths, window_size, batch_size = 64):
+def image_generator(images, ground_truths, window_size, batch_size = 64, 
+                    rot_proba = [0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125]):
     np.random.seed(0)
     imgWidth = images[0].shape[0]
     imgHeight = images[0].shape[1]
@@ -80,8 +81,9 @@ def image_generator(images, ground_truths, window_size, batch_size = 64):
     # side length 1/sqrt(2) * the original side length of the image.
     rotation_thresh = 4 * len(images)
     rotations = [0, 90, 180, 270, 45, 135, 225, 315]
-    for i in range(len(images)):
-        for j in range(8):
+    
+    for j in range(8):
+        for i in range(len(images)):
             rotatedImages.append(rot(paddedImages[i], np.array([imgWidth, imgHeight]), rotations[j]))
             rotatedGroundTruths.append(rot(ground_truths[i], np.array([imgWidth, imgHeight]), rotations[j]))
     
@@ -93,7 +95,15 @@ def image_generator(images, ground_truths, window_size, batch_size = 64):
             x = np.empty((window_size, window_size, 3))
             y = np.empty((window_size, window_size, 3))
             
-            randomIndex = np.random.randint(0, len(rotatedImages))  
+            randomIndex = np.random.randint(0, len(rotatedImages) // 8) 
+            
+            # Possibility to add probability to each rotation
+            #rotationIndex = numpy.random.choice(numpy.arange(0, len(rotations)), 
+            #                                    p=[0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125])
+            rotationIndex = numpy.random.choice(numpy.arange(0, len(rotations)), p=rot_proba)
+            
+            randomIndex = randomIndex + rotationIndex * 8                         
+                                              
             img = rotatedImages[randomIndex]
             gt = rotatedGroundTruths[randomIndex]
             
