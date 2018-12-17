@@ -37,6 +37,33 @@ Our task is to create the following file:
 
 - **submission.csv**
 
+
+
+## Performance of our models
+
+### Basic model with window of 80 pixels
+
+All 200 epochs (with Early stop)
+
+| Model Description                                            | Training Accuracy | crowdAI F1 |
+| ------------------------------------------------------------ | ----------------- | ---------- |
+| 80 window Basic Model, no dense, 0.1 dropout, basic rotations | 0.972             | 0.881      |
+| 80 window Basic Model, no dense, 0.1 dropout, full rotations | 0.963             | 0.871      |
+| 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
+
+### Varying window sizes on basic model
+
+All 200 epochs (With Early stop)
+
+| Model Description                                            | Training Accuracy | crowdAI F1 |
+| ------------------------------------------------------------ | ----------------- | ---------- |
+| 64 window Basic Model, no dense, 0.2 dropout, full rotations | 0.950             | -          |
+| 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
+| 100 window Basic Model, no dense, 0.2 dropout, full rotations | 0.963             | 0.870      |
+| 120 window Basic Model, no dense, 0.2 dropout, full rotations | 0.949             | 0.826      |
+
+
+
 ## How to run Keras (with GPU) on a Jupyter notebook from a EC2 (AWS) instance
 
 1. Sign-up for a AWS Educate account, or even better use the promo from the Github student pack to create a full-fledged AWS account.
@@ -80,7 +107,7 @@ All we have to do is add a callback to the keras fit method, as well as running 
 ```
  ssh -i "aws_key.pem" -L 16006:127.0.0.1:6006 ubuntu@ec2-34-206-1-189.compute-1.amazonaws.com
 
-tensorbod --logdir=/home/ubuntu/road-segmentation/src/logs
+tensorboard --logdir=/home/ubuntu/road-segmentation/src/logs
 
 http://127.0.0.1:16006
 ```
@@ -90,6 +117,12 @@ http://127.0.0.1:16006
 ```bash
 (tensorflow_p36) $ nohup python run.py > /dev/null 2>&1&
 ```
+
+## Kaggle Kernels
+
+K80 for free during 6h session ! Can run many sessions at the same time !
+
+
 
 
 
