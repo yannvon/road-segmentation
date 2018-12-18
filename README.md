@@ -82,12 +82,38 @@ All with 0.2 validation
 | 1    | 80 window Basic Model, no dense, 0.1 dropout, 10% rotation   | 0.961             | 0.922               | 0.859      | without validation achieved 0.881 ? How? |
 | 2    | 100 window Basic Model, no dense, 0.1 dropout, 10% rotation  | 0.966             | 0.919               | 0.856      | ????                                     |
 | 3    | 100 window Basic Model, no dense, 0.25 dropout, 10% rotation, initial learning rate = 0.001 | 0.965             | 0.920               |            |                                          |
-| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               |            |                                          |
+| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               |            | needs rerun                              |
 | 5    | 100 window Basic Model, 1 dense, 0.25 dropout, basic rotation, initial learning rate = 0.0005 | 0.965             | 0.931               |            |                                          |
-| 6    | 100 window Basic Model, no dense, 0.25 dropout, basic rotation, 50/50 data, initial learning rate = 0.001 | 0.271             | 0.257               | -          | diverged !                               |
-| 6    | 100 window Basic Model, no dense, 0.25 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005 | 0.980             | 0.943               | 0.884      | new all time best!                       |
+| 6    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.001 | 0.271             | 0.257               | -          | diverged !                               |
+| 6    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005 | 0.980             | 0.943               | 0.884      | new all time best!                       |
+
+### Tuesday experiments
+
+Tiago Bugfix padding
+
+All 200 epochs (With Early stop)
+
+All with 0.2 validation
+
+| id   | Model Description                | Training Accuracy | Validation Accuracy | crowdAI F1 | comments |
+| ---- | -------------------------------- | ----------------- | ------------------- | ---------- | -------- |
+| 1    | same model                       |                   |                     |            |          |
+| 2    | 1 max pooling less (between 128) |                   |                     |            |          |
+| 3    | 0.25 droupout                    |                   |                     |            |          |
+| 4    | dense                            |                   |                     |            |          |
+| 5    | augmented                        |                   |                     |            |          |
+| 6    | regularizer l2                   |                   |                     |            |          |
 
 
+
+
+
+### Other tests
+
+- Relu vs LeakyRelu
+- kernel size
+- transfer learning
+- Tiago strat
 
 
 
