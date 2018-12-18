@@ -238,26 +238,41 @@ def round(x):
     else:
         return 1.
 
+    
 #create image with the errors of the prediction highlighted
 def checkImageTrainSet(model,imgs,gt_imgs,window_size):
+    num_images = len(imgs)
     dir_error = 'error_training_set/'
     if not os.path.isdir(dir_error):
         os.mkdir(dir_error)
-    for i in range(1, 101):
-        pimg = get_prediction(imgs[i-1], model, window_size)
+    for k in range(1, constants.TRAINING_SIZE+1):
+        pimg = get_prediction(imgs[k-1],model,window_size)
         w=pimg.shape[0]
         h=pimg.shape[1]
-        gt_img = numpy.vectorize(round)(gt_imgs[i-1])
+        gt_img = numpy.vectorize(round)(gt_imgs[k-1])
+        
+        gt_patches = img_crop(gt_imgs[k-1], constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE)
+        gt_labels = numpy.asarray([value_to_class(numpy.mean(gt_patches[i])) for i in range(len(gt_patches))])
+        
+        patches = img_crop(pimg, constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE)
+        labels = numpy.asarray([value_to_class(numpy.mean(patches[i])) for i in range(len(patches))])
+        
+
+        
+        error_label = numpy.zeros((labels.shape[0],2))
+        for j in range (labels.shape[0]):
+            if(labels[j][0] == gt_labels[j][0]):
+                error_label[j] = [1, 0]
+            else:
+                error_label[j] = [0, 1]
+        
+        error = label_to_img(w,h,constants.IMG_PATCH_SIZE,constants.IMG_PATCH_SIZE,error_label)
         color_mask = numpy.zeros((w,h,3), dtype=numpy.uint8)
-        for j in range(0,w):
-            for k in range(0,h):
-                if(pimg[j,k] != gt_img[j,k]):
-                    color_mask[j,k,0] = 0
-                else:
-                    color_mask[j,k,0] = constants.PIXEL_DEPTH
-        img8 = img_float_to_uint8(imgs[i-1])
+        gt_img8 = img_float_to_uint8(error)  
+        color_mask[:,:,0] = gt_img8
+        
+        img8 = img_float_to_uint8(imgs[k-1])
         background = Image.fromarray(img8, 'RGB').convert("RGBA")
         overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
         new_img = Image.blend(background, overlay, 0.5)
-        new_img.save(dir_error + "error_" + str(i) + ".png")
-       
+        new_img.save(dir_error + "error_%.3d" % k + ".png") 
