@@ -27,9 +27,8 @@ from postprocessing_helper import *
 class NewModel:
     """ A simple model inspired by the VGG model """
     
-    WINDOW_SIZE = 80
+    WINDOW_SIZE = 100
     OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
-    ROT_PROBA = [0.2,0.2,0.2,0.2,0.05,0.05,0.05,0.05] #[0, 90, 180, 270, 45, 135, 225, 315]
 
     def __init__(self):
 
@@ -116,6 +115,8 @@ class NewModel:
         self.X_train = imgs
         self.Y_train = gt_imgs
         
+        # FIXME this will introduce randomness, i.e. different print on kaggle and aws !
+        
 
     def train(self, epochs=30, validation_split=0.2):
         
@@ -133,38 +134,43 @@ class NewModel:
         self.train_label_split = self.Y_train[0:split_index]
         self.validation_label_split = self.Y_train[split_index:len(self.Y_train)]    
         
-        # Step 2: Give weights to classes
-        # FIXME correct?
-        c_weight = {1: 2.8, 
-                    0: 1.}
+        # Step 2: Solve underrepresentation problem
+        # Option 1: Give weights to classes
+        # c_weight = {1: 2.8, 
+        #            0: 1.}
         
-        # (depracated) Step 2 : other option, cut out data !
+        # Option 2: Undersample data
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
-
+        
+        # Option 3: Oversample data 
+        # This is done here, in the image_generator directly !
+        
+        # Note: Should we also oversample validation set?
+        
         # Step 3: Greate Generators
         train_generator = image_generator(self.train_data_split,
                                           self.train_label_split,
                                           self.WINDOW_SIZE,
                                           batch_size = 32, 
-                                          rot_proba=self.ROT_PROBA)
+                                          oversample=True)
         
         validation_generator = image_generator(self.validation_data_split,
                                                self.validation_label_split,
                                                self.WINDOW_SIZE,
                                                batch_size = 32,
-                                               rot_proba=self.ROT_PROBA)
+                                               oversample=True)
 
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
+        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
                                             mode='auto', restore_best_weights=True)
         # Taken from Github model
         # FIXME does this work for accuracy on training set?
-        lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
+        lr_callback = ReduceLROnPlateau(monitor='acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
         # Save checkpoints
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
-        checkpoint_callback = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True,
+        checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
         
         # Save data for TensorBoard
@@ -184,10 +190,8 @@ class NewModel:
                     steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
-                    class_weight=c_weight,
                     use_multiprocessing=True,
                     validation_steps=len(self.validation_data_split) * 16 * 16 * 2 / 32)
-        
         
             
     def generate_images(self, imgs, gt_imgs):
