@@ -139,26 +139,26 @@ class NewModel:
         # c_weight = {1: 2.8, 
         #            0: 1.}
         
-        # Option 2: Undersample data
+        # Option 2: downsample data
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
         
-        # Option 3: Oversample data 
+        # Option 3: upsample data 
         # This is done here, in the image_generator directly !
         
-        # Note: Should we also oversample validation set?
+        # Note: Should we also upsample validation set?
         
         # Step 3: Greate Generators
         train_generator = image_generator(self.train_data_split,
                                           self.train_label_split,
                                           self.WINDOW_SIZE,
                                           batch_size = 32, 
-                                          oversample=True)
+                                          upsample=True)
         
         validation_generator = image_generator(self.validation_data_split,
                                                self.validation_label_split,
                                                self.WINDOW_SIZE,
                                                batch_size = 32,
-                                               oversample=True)
+                                               upsample=True)
 
         # Step 4: Early stop and other Callbacks
         early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 

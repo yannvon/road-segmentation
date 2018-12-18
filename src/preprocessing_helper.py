@@ -60,7 +60,7 @@ def rot(image, xy, angle):
             -org[0]*np.sin(a) + org[1]*np.cos(a) ])
     return im_rot
 
-def image_generator(images, ground_truths, window_size, batch_size = 64, oversample=False):
+def image_generator(images, ground_truths, window_size, batch_size = 64, upsample=False):
     np.random.seed(0)
     imgWidth = images[0].shape[0]
     imgHeight = images[0].shape[1]
@@ -120,7 +120,7 @@ def image_generator(images, ground_truths, window_size, batch_size = 64, oversam
             label = [0., 1.] if (np.array([np.mean(y)]) >  constants.FOREGROUND_THRESHOLD) else [1., 0.]
             
             # makes sure we have an even distribution of road and non road if we oversample
-            if not oversample:
+            if not upsample:
                 batch_input.append(x)
                 batch_output.append(label)
             elif label == [1.,0.]:
