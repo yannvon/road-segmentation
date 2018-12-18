@@ -47,9 +47,9 @@ All 200 epochs (with Early stop)
 
 | Model Description                                            | Training Accuracy | crowdAI F1 |
 | ------------------------------------------------------------ | ----------------- | ---------- |
-| 80 window Basic Model, no dense, 0.1 dropout, basic rotations | 0.972             | 0.881      |
-| 80 window Basic Model, no dense, 0.1 dropout, full rotations | 0.963             | 0.871      |
-| 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
+| 80 window Basic Model, no dense, 0.1 dropout, 10% rotations  | 0.972             | 0.881      |
+| 80 window Basic Model, no dense, 0.1 dropout, optimized rotations | 0.963             | 0.871      |
+| 80 window Basic Model, no dense, 0.2 dropout, optimized rotations | 0.955             | 0.843      |
 
 ### Varying window sizes on basic model
 
@@ -61,6 +61,33 @@ All 200 epochs (With Early stop)
 | 80 window Basic Model, no dense, 0.2 dropout, full rotations | 0.955             | 0.843      |
 | 100 window Basic Model, no dense, 0.2 dropout, full rotations | 0.963             | 0.870      |
 | 120 window Basic Model, no dense, 0.2 dropout, full rotations | 0.949             | 0.826      |
+
+### Monday afternoon experiments
+
+All 200 epochs (With Early stop)
+
+| Model Description                                            | Training Accuracy | crowdAI F1 |
+| ------------------------------------------------------------ | ----------------- | ---------- |
+| 80 window Basic Model, no dense, 0.1 dropout, augmented data | diverges (0.75)   | -          |
+| 80 window Basic Model, no dense, 0.1 dropout, optimized rotations | 0.970             | 0.862      |
+
+### Monday night experiments
+
+All 200 epochs (With Early stop)
+
+All with 0.2 validation
+
+| id   | Model Description                                            | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                                 |
+| ---- | ------------------------------------------------------------ | ----------------- | ------------------- | ---------- | ---------------------------------------- |
+| 1    | 80 window Basic Model, no dense, 0.1 dropout, 10% rotation   | 0.961             | 0.922               | 0.859      | without validation achieved 0.881 ? How? |
+| 2    | 100 window Basic Model, no dense, 0.1 dropout, 10% rotation  | 0.966             | 0.919               | 0.856      | ????                                     |
+| 3    | 100 window Basic Model, no dense, 0.25 dropout, 10% rotation, initial learning rate = 0.001 | 0.965             | 0.920               |            |                                          |
+| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               |            |                                          |
+| 5    | 100 window Basic Model, 1 dense, 0.25 dropout, basic rotation, initial learning rate = 0.0005 | 0.965             | 0.931               |            |                                          |
+| 6    | 100 window Basic Model, no dense, 0.25 dropout, basic rotation, 50/50 data, initial learning rate = 0.001 | 0.271             | 0.257               | -          | diverged !                               |
+| 6    | 100 window Basic Model, no dense, 0.25 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005 | 0.980             | 0.943               | 0.884      | new all time best!                       |
+
+
 
 
 
