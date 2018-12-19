@@ -89,6 +89,8 @@ All with 0.2 validation
 
 ### Tuesday experiments
 
+100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005
+
 Tiago Bugfix padding
 
 All 200 epochs (With Early stop)
@@ -97,16 +99,34 @@ All with 0.2 validation
 
 | id   | Model Description                | Training Accuracy | Validation Accuracy | crowdAI F1 | comments |
 | ---- | -------------------------------- | ----------------- | ------------------- | ---------- | -------- |
-| 1    | same model                       |                   |                     |            |          |
-| 2    | 1 max pooling less (between 128) |                   |                     |            |          |
-| 3    | 0.25 droupout                    |                   |                     |            |          |
-| 4    | dense                            |                   |                     |            |          |
+| 1    | same model                       | 0.978             | 0.941               | 0.884      |          |
+| 2    | 1 max pooling less (between 128) | 0.987             | 0.940               | 0.88       |          |
+| 3    | 0.25 droupout                    | 0.978             | 0.933               | 0.869      |          |
+| 4    | dense                            | 0.978             | 0.942               | 0.881      |          |
 | 5    | augmented                        |                   |                     |            |          |
 | 6    | regularizer l2                   |                   |                     |            |          |
 
 
 
+### Tuesday night experiments
 
+100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005
+
+Tiago Bugfix padding
+
+All 200 epochs (With Early stop)
+
+All with 0.2 validation
+
+
+
+| id   | Model Description                | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                    |
+| ---- | -------------------------------- | ----------------- | ------------------- | ---------- | --------------------------- |
+| 1    | threshold = 0.2                  | 0.981             | 0.944               | 0.861      |                             |
+| 2    | threshold = 0.25                 | 0.975             | 0.941               |            |                             |
+| 3    | threshold = 0.3                  | 0.976             | 0.941               |            | no difference apparently .. |
+| 4    | threshold = 0.35                 | 0.981             | 0.941               |            |                             |
+| 5    | threshold = 0.25 and up-sampling | 0.989             | 0.940               |            |                             |
 
 ### Other tests
 
