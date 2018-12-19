@@ -96,7 +96,7 @@ class NewModel:
         
         self.model = model
         
-        adam_optimizer = Adam(lr=0.001)
+        adam_optimizer = Adam(lr=0.0005)
         self.model.compile(optimizer=adam_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
         
