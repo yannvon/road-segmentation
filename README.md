@@ -45,8 +45,8 @@ The project is structured as follows:
 
 The data set can be downloaded [the EPFL private challenge](https://www.crowdai.org/challenges/epfl-ml-road-segmentation) or from our git repository. The data set is structured as follows: 
 
-- **test set images** 100 images of dimension (400,400,3), i.e. RGB colors, 100 ground truth images
-- **training set** 50 images of dimension (400,400,3), no ground truth
+- **training set** 100 images of dimension (400,400,3), i.e. RGB colors, 100 ground truth images
+- **test set images** 50 images of dimension (608,608,3), no ground truth
 
 ## Running our models
 
