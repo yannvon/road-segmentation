@@ -3,8 +3,6 @@ import numpy
 import matplotlib.image as mpimg
 import re
 from PIL import Image
-
-
 import constants
 from helper import load_image
 from preprocessing_helper import create_windows, img_crop
@@ -68,33 +66,6 @@ def extract_labels(filename, num_images):
     return labels.astype(numpy.float32)
 
 
-#FIXME useless?
-# def error_rate(predictions, labels):
-#     """Return the error rate based on dense predictions and 1-hot labels."""
-#     return 100.0 - (
-#         100.0 *
-#         numpy.sum(numpy.argmax(predictions, 1) == numpy.argmax(labels, 1)) /
-#         predictions.shape[0])
-
-#FIXME useless?
-# # Write predictions from neural network to a file
-# def write_predictions_to_file(predictions, labels, filename):
-#     max_labels = numpy.argmax(labels, 1)
-#     max_predictions = numpy.argmax(predictions, 1)
-#     file = open(filename, "w")
-#     n = predictions.shape[0]
-#     for i in range(0, n):
-#         file.write(max_labels(i) + ' ' + max_predictions(i))
-#     file.close()
-
-#FIXME
-# # Print predictions from neural network
-# def print_predictions(predictions, labels):
-#     max_labels = numpy.argmax(labels, 1)
-#     max_predictions = numpy.argmax(predictions, 1)
-#     print (str(max_labels) + ' ' + str(max_predictions))
-
-
 # Convert array of labels to an image
 def label_to_img(imgwidth, imgheight, w, h, labels):
     array_labels = numpy.zeros([imgwidth, imgheight])
@@ -115,6 +86,7 @@ def img_float_to_uint8(img):
     rimg = (rimg / numpy.max(rimg) * constants.PIXEL_DEPTH).round().astype(numpy.uint8)
     return rimg
 
+
 def concatenate_images(img, gt_img):
     nChannels = len(gt_img.shape)
     w = gt_img.shape[0]
@@ -131,6 +103,7 @@ def concatenate_images(img, gt_img):
         cimg = numpy.concatenate((img8, gt_img_3c), axis=1)
     return cimg
 
+
 def make_img_overlay(img, predicted_img):
     w = img.shape[0]
     h = img.shape[1]
@@ -142,6 +115,7 @@ def make_img_overlay(img, predicted_img):
     new_img = Image.blend(background, overlay, 0.2)
     return new_img
 
+
 # Get prediction for given input image 
 def get_prediction(img, model, window_size):
     data = numpy.asarray(create_windows(img, window_size))
@@ -149,17 +123,20 @@ def get_prediction(img, model, window_size):
     img_prediction = label_to_img(img.shape[0], img.shape[1], constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE, output_prediction)
     return img_prediction
 
+
 # Get a concatenation of the prediction and image for given input file
 def get_prediction_with_mask(img, model, window_size):
     img_prediction = get_prediction(img, model, window_size)
     cimg = concatenate_images(img, img_prediction)
     return cimg
 
+
 # Get prediction overlaid on the original image for given input file
 def get_prediction_with_overlay(img, model, window_size):
     img_prediction = get_prediction(img,model, window_size)
     oimg = make_img_overlay(img, img_prediction)
     return oimg
+
 
 # assign a label to a patch
 def patch_to_label(patch):
@@ -169,6 +146,7 @@ def patch_to_label(patch):
     else:
         return 1
 
+    
 def mask_to_submission_strings(img_filename):
     """Reads a single image and outputs the strings that should go into the submission file"""
     img_number = int(re.search(r"\d+", img_filename).group(0))
@@ -256,9 +234,7 @@ def checkImageTrainSet(model,imgs,gt_imgs,window_size):
         
         patches = img_crop(pimg, constants.IMG_PATCH_SIZE, constants.IMG_PATCH_SIZE)
         labels = numpy.asarray([value_to_class(numpy.mean(patches[i])) for i in range(len(patches))])
-        
-
-        
+       
         error_label = numpy.zeros((labels.shape[0],2))
         for j in range (labels.shape[0]):
             if(labels[j][0] == gt_labels[j][0]):

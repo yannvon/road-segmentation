@@ -58,13 +58,9 @@ class BasicModel:
         self.validation_label_split = self.train_labels[split_index:len(self.train_data)]
         
         # Step 2: Give weights to classes
-        # FIXME correct?
-        c_weight = {1: 1., 
-                    0: 3.}
+        c_weight = {1: 3., 
+                    0: 1.}
         
-        # (depracated) Step 2 : other option, cut out data !
-        # X, Y = get_equal_train_set_per_class(train_data, train_labels)
-
         # Step 3: Greate Generators
         train_datagen = ImageDataGenerator(
             #rotation_range=180,
@@ -123,16 +119,6 @@ class BasicModel:
         
     def load(self):
         pass
-        # FIXME
-        ##load json and create model
-        #json_file = open('model.json', 'r')
-        #loaded_model_json = json_file.read()
-        #json_file.close()
-        #loaded_model = model_from_json(loaded_model_json)
-        ##load weights into new model
-        #loaded_model.load_weights("model.h5")
-        #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
-        #print("Loaded model from disk")
         
     def f1_score(self):
         validation_data_prediction = self.model.predict_classes(self.validation_data_split)

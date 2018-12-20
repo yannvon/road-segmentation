@@ -1,3 +1,5 @@
+""" file containing all methods used in preprocessing data for the model """
+
 import numpy as np
 import os
 import sys
