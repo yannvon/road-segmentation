@@ -51,7 +51,7 @@ The data set can be downloaded [the EPFL private challenge](https://www.crowdai.
 
 ## Running our models
 
-We required the `requirements.txt` file which allows to install dependencies in a virtual environment as follows:
+We provide the `requirements.txt` file which allows to install dependencies in a virtual environment very easily as follows:
 
 ```bash
 $ virtualenv venv
@@ -61,9 +61,7 @@ $ source venv/bin/activate
 
 Alternatively a standard environment with **Tensorflow 1.12**, **Keras 2.2.4** and **OpenCV** installed should work.
 
-> Note that since we ran our code in an AWS Deep Learning AMI 20.0, the requirements file is somewhat unnecessarily large. 
-
-We have used EC2 instances on AWS, as well as Kaggle Kernels to run our code. If you are interested you will find exact information on how to use these resources in the Appendix at the end of this document.
+We have used EC2 instances on AWS, as well as Kaggle Kernels to run our code. If you are interested you will find exact information on how to use these resources in the Appendix at the end of this document, though it was mostly meant as a reference for ourselves.
 
 Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as well as many other images, with mask, errors etc. will be automatically created.
 
