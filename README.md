@@ -30,6 +30,7 @@ The project is structured as follows:
 │   ├── cross_validation.py		# Script to crossvalidate models
 │   ├── basic_model.py			# Class with our first basic model
 │   ├── dense_model.py			# Class containing a model with large FC layers
+│   ├── transfer_learning.py	# Class containing a model performing transfer learning
 │   └── deep_model.py			# Class containing our best model
 ├── template                	# Directory of template files given to us
 ├── trained_models          	# Directory containing weights of trained models
