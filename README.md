@@ -131,11 +131,21 @@ All with 0.2 validation
 
 ### Wednesday experiments
 
-| Alpha Relu | Model Description      | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                                              |
-| ---------- | ---------------------- | ----------------- | ------------------- | ---------- | ----------------------------------------------------- |
-| 1          | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | avec 0 de alpha relu -> = relu                        |
-| 2          | Best with alpha = 0.1  | 0.980             | 0.943               | 0.884      | The value of alpha relu we used to get the best score |
-| 3          | Best with alpha = 0.01 | 0.979             | 0.9371              | 0.877      | Usually the value used..                              |
+| id   | Model Description      | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                                              |
+| ---- | ---------------------- | ----------------- | ------------------- | ---------- | ----------------------------------------------------- |
+| 1    | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | avec 0 de alpha relu -> = relu                        |
+| 2    | Best with alpha = 0.1  | 0.980             | 0.943               | 0.884      | The value of alpha relu we used to get the best score |
+| 3    | Best with alpha = 0.01 | 0.979             | 0.9371              | 0.877      | Usually the value used..                              |
+### Window Size
+
+| id   | Model Description   | Training Accuracy | Validation Accuracy | crowd AI F1 | comments |
+| ---- | ------------------- | ----------------- | ------------------- | ----------- | -------- |
+| 1    | Windows size of 80  | 0.974             | 0.935               | 0.88        |          |
+| 2    | Windows size of 100 | 0.980             | 0.943               | 0.884       |          |
+| 3    | Windows size of 120 | 0.977             | 0.940               | 0.883       |          |
+
+
+
 ### Other tests
 
 - Relu vs LeakyRelu
