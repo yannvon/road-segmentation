@@ -11,24 +11,22 @@ from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2
 from keras.layers import LeakyReLU
 from keras.regularizers import l2
 
-# FIXME too many imports, remove unnecessary
-from keras import callbacks
 from keras.applications.vgg19 import VGG19
 from keras.layers import Input, Flatten, Dense
 from keras.models import Model
 from keras.optimizers import Adam
+from keras.applications.vgg16 import VGG16
+from keras.preprocessing import image
+from keras.applications.vgg16 import preprocess_input
+from keras.layers import Input, Flatten, Dense
+from keras.models import Model
 
 
-import constants
-from preprocessing_helper import *
-from postprocessing_helper import *
-
-
-class DeepModel:
-    """ Our best performing model inspired by the VGG architecture """
+class TransferLearning:
+    """ A model loading pretrained weights of VGG 16 """
     
     WINDOW_SIZE = 100
-    OUTPUT_FILENAME = "deep_model"
+    OUTPUT_FILENAME = "vgg_model"
 
     def __init__(self):
 
@@ -42,68 +40,61 @@ class DeepModel:
         #Size of input matrix
         #To change according to the shape
         shape = (self.WINDOW_SIZE, self.WINDOW_SIZE, 3)
-        model = Sequential()
 
-
-        #Add convolution 
-        model.add(Convolution2D(64,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(64,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-
-        model.add(Convolution2D(128,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(128,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-
-        model.add(Convolution2D(256,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(LeakyReLU(alpha_relu))
-        model.add(MaxPooling2D(pool_size))
-        model.add(Convolution2D(256,
-                                kernel_size,
-                                padding='same',
-                                input_shape=shape))
-        model.add(Dropout(0.1))
-        model.add(LeakyReLU(alpha_relu))
-
-        model.add(Flatten())
-
-        model.add(Dense(2))
-        model.add(Activation('softmax'))
+        #Taken from https://github.com/keras-team/keras/issues/4465
         
-        self.model = model
+
+        #Get back the convolutional part of a VGG network trained on ImageNet
+        
+        # vgg16_weights = '../input/vgg16/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+        
+        
+        #Get back the convolutional part of a VGG network trained on ImageNet
+        model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
+        model_vgg16_conv.summary()
+
+        for layer in model_vgg16_conv.layers:
+            layer.trainable = False
+        
+        #Create your own input format (here 3x200x200)
+        input = Input(shape=(100,100,3), name = 'image_input')
+
+        #Use the generated model 
+        output_vgg16_conv = model_vgg16_conv(input)
+
+        #Add the fully-connected layers 
+        x = Flatten(name='flatten')(output_vgg16_conv)
+        x = Dense(1024, activation='relu', name='fc1')(x)
+        # x = Dense(, activation='relu', name='fc2')(x)
+        x = Dense(2, activation='softmax', name='predictions')(x)
+
+        #Create your own model 
+        my_model = Model(input=input, output=x)
+
+        # In the summary, weights and layers from VGG part will be hidden, 
+        # but they will be fit during the training
+        my_model.summary()
+        
+        self.model = my_model
         
         adam_optimizer = Adam(lr=0.0005)
-        self.model.compile(optimizer=adam_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer=adam_optimizer, 
+                           loss='categorical_crossentropy', 
+                           metrics=['accuracy'])
 
         
         
     def load_data(self, image_dir, gt_dir, training_size):
         files = os.listdir(image_dir)
         n = len(files)
+        print("Loading " + str(n) + " images")
         imgs = [load_image(image_dir + files[i]) for i in range(n)]
+        print(imgs[0][2])
+
+        print("Loading " + str(n) + " images")
         gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
+        print(files[0])
+
         self.X_train = imgs
         self.Y_train = gt_imgs
         
@@ -129,29 +120,32 @@ class DeepModel:
         # c_weight = {1: 2.8, 
         #            0: 1.}
         
-        # Option 2: downsample data
+        # Option 2: Undersample data
         # X, Y = get_equal_train_set_per_class(train_data, train_labels)
         
-        # Option 3: upsample data 
+        # Option 3: Oversample data 
         # This is done here, in the image_generator directly !
-                
+        
+        # Note: Should we also oversample validation set?
+        
         # Step 3: Greate Generators
         train_generator = image_generator(self.train_data_split,
                                           self.train_label_split,
                                           self.WINDOW_SIZE,
                                           batch_size = 32, 
-                                          upsample=True)
+                                          oversample=True)
         
         validation_generator = image_generator(self.validation_data_split,
                                                self.validation_label_split,
                                                self.WINDOW_SIZE,
                                                batch_size = 32,
-                                               upsample=True)
+                                               oversample=True)
 
         # Step 4: Early stop and other Callbacks
         early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
                                             mode='auto', restore_best_weights=True)
         # Taken from Github model
+        # FIXME does this work for accuracy on training set?
         lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
@@ -174,11 +168,12 @@ class DeepModel:
         # Training  
         self.model.fit_generator(train_generator,
                     validation_data = validation_generator,
-                    steps_per_epoch=len(self.train_data_split * 16 * 16) / 32,
+                    steps_per_epoch=len(self.X_train * 16 * 16) / 32,
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     use_multiprocessing=True,
                     validation_steps=len(self.validation_data_split) * 16 * 16 * 2 / 32)
+        
         
             
     def generate_images(self, imgs, gt_imgs):
@@ -198,7 +193,7 @@ class DeepModel:
         createSubmission(self.model, self.WINDOW_SIZE)
   
     def save(self):
-        """ save model on disk """
+        # save model on disk
         # source https://machinelearningmastery.com/save-load-keras-deep-learning-models/
         # serialize model to JSON
         model_json = self.model.to_json()
@@ -208,15 +203,15 @@ class DeepModel:
         self.model.save_weights(self.OUTPUT_FILENAME + ".h5")
         print("Saved model to disk")
         
-    def load(self, weights_dir):
-        """ load model weights """ 
-        
+    def load(self):
+        ##load json and create model
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()
         #json_file.close()
         #loaded_model = model_from_json(loaded_model_json)
         
-        ## load weights into new model
-        self.model.load_weights(weights_dir)
+        ##load weights into new model
+        self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
+        #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
         print("Loaded model from disk")
         

@@ -5,15 +5,11 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, T
 from keras.models import model_from_json
 from sklearn.metrics import f1_score
 import numpy as np
-
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers import LeakyReLU
 from keras.regularizers import l2
-
-# FIXME too many imports, remove unnecessary
 from keras import callbacks
-from keras.applications.vgg19 import VGG19
 from keras.layers import Input, Flatten, Dense
 from keras.models import Model
 from keras.optimizers import Adam
@@ -28,7 +24,7 @@ class DenseModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
-    OUTPUT_FILENAME = "dense_model_wind"+ str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "dense_model"
 
     def __init__(self):
 
@@ -43,9 +39,6 @@ class DenseModel:
         #To change according to the shape
         shape = (self.WINDOW_SIZE, self.WINDOW_SIZE, 3)
         model = Sequential()
-
-
-        #ITERATION 1
 
         #Add convolution 
         model.add(Convolution2D(64,
@@ -208,7 +201,6 @@ class DenseModel:
         print("Saved model to disk")
         
     def load(self):
-        # FIXME
         ##load json and create model
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()
@@ -217,6 +209,6 @@ class DenseModel:
         
         ##load weights into new model
         self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
-        #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
+        loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
         print("Loaded model from disk")
         

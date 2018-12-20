@@ -39,3 +39,16 @@ def f1(y_true, y_pred):
     precision = precision(y_true, y_pred)
     recall = recall(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+
+def cross_validate(epochs, folds = 4):
+    """ Function used to crossvalidate our results """
+    accuracy_sum = 0
+    f1_sum = 0
+    for i in range(folds):
+        model.train(epochs=epochs, validation_split=0.2, seed=folds)
+        scores = model.scores()
+        accuracy_sum += scores[0]
+        f1_sum += scores[1]
+        print("Fold - "+str(i+1)+" : accuracy = "+str(scores[0])+", f1 = "+str(scores[1]))
+        print("Cross-validation "+str(folds)+" folds : mean accuracy = "+str(accuracy_sum / folds)+", mean f1 score = "+str(f1_sum / folds))
