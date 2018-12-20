@@ -1,10 +1,10 @@
 # CS-433 Project 2: Road Segmentation
 
-**This README should allow anyone to replicate our obtained results, for more detailed results,  interpretations, methodology see our report.**
+**This README should allow anyone to replicate our obtained results. For more detailed results,  interpretations, methodology see our report.**
 
 ## Introduction
 
-Image Segmentation in a domain of Computer Vision with a wide range of applications, such as medicine, autonomous driving, face recognition and more. In this project we have the goal to classify patches of satellite images obtained from Google Maps into road and background classes. This task is nontrivial as oftentimes the aerial view on roads is obstructed by trees, buildings and cars. Additionally the definition of a road can be very ambiguous in presence of walkways, railroads and other structures.
+Image Segmentation is a domain of Computer Vision with a wide range of applications, such as medicine, autonomous driving, face recognition and more. In this project we have the goal to classify patches of satellite images obtained from Google Maps into road and background classes. This task is nontrivial as oftentimes the aerial view on roads is obstructed by trees, buildings and cars. Additionally the definition of a road can be very ambiguous in presence of walkways, railroads and other structures.
 
 In this project we compare models based on state of the art image classification research and try to make the most use of the small training set we were given.
 
@@ -46,8 +46,8 @@ The project is structured as follows:
 
 The data set can be downloaded [the EPFL private challenge](https://www.crowdai.org/challenges/epfl-ml-road-segmentation) or from our git repository. The data set is structured as follows: 
 
-- **test set images** 100 images of dimension (400,400,3), i.e. RGB colors, 100 ground truth images
-- **training set** 50 images of dimension (400,400,3), no ground truth
+- **training set** 100 images of dimension (400,400,3), i.e. RGB colors, 100 ground truth images
+- **test set images** 50 images of dimension (608,608,3), no ground truth
 
 ## Running our models
 
@@ -65,7 +65,7 @@ Alternatively a standard environment with **Tensorflow 1.12**, **Keras 2.2.4** a
 
 We have used EC2 instances on AWS, as well as Kaggle Kernels to run our code. If you are interested you will find exact information on how to use these resources in the Appendix at the end of this document.
 
-Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as will as many other images, with mask, errors etc. will be automatically created.
+Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as well as many other images, with mask, errors etc. will be automatically created.
 
 ## Our approach
 
@@ -123,7 +123,7 @@ By adding a callback that automatically lowers the learning rate once a plateau 
 | 1    | 80 window Basic Model, no dense, 0.1 dropout, 10% rotation   | 0.961             | 0.922               | 0.859      |             |
 | 2    | 100 window Basic Model, no dense, 0.1 dropout, 10% rotation  | 0.966             | 0.919               | 0.856      |             |
 | 3    | 100 window Basic Model, no dense, 0.25 dropout, 10% rotation, initial learning rate = 0.001 | 0.965             | 0.920               | -          |             |
-| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               | -          | needs rerun |
+| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               | -          |             |
 | 5    | 100 window Basic Model, 1 dense, 0.25 dropout, basic rotation, initial learning rate = 0.0005 | 0.965             | 0.931               | -          |             |
 | 6    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.001 | 0.271             | 0.257               | -          | diverged !  |
 | 7    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005 | 0.980             | 0.943               | 0.884      | new best.   |
@@ -159,7 +159,7 @@ We have shown that the standard value of alpha = 0.01 does not work best for us,
 
 | id   | Model Description      | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                                              |
 | ---- | ---------------------- | ----------------- | ------------------- | ---------- | ----------------------------------------------------- |
-| 1    | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | avec 0 de alpha relu -> = relu                        |
+| 1    | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | with alpha relu = 0, it is equivalent to relu 	       |
 | 2    | Best with alpha = 0.1  | 0.980             | 0.943               | 0.884      | The value of alpha relu we used to get the best score |
 | 3    | Best with alpha = 0.01 | 0.979             | 0.9371              | 0.877      | Usually the value used..                              |
 
