@@ -103,7 +103,7 @@ All with 0.2 validation
 | 2    | 1 max pooling less (between 128) | 0.987             | 0.940               | 0.88       |          |
 | 3    | 0.25 droupout                    | 0.978             | 0.933               | 0.869      |          |
 | 4    | dense                            | 0.978             | 0.942               | 0.881      |          |
-| 5    | augmented                        |                   |                     |            |          |
+| 5    | augmented                        |                   |                     | 0.869      |          |
 | 6    | regularizer l2                   |                   |                     |            |          |
 
 
@@ -201,7 +201,7 @@ K80 for free during 6h session ! Can run many sessions at the same time !
 
 ## Our Approach
 
-
+Non deterministic if trained on GPU !
 
 
 
@@ -215,21 +215,7 @@ K80 for free during 6h session ! Can run many sessions at the same time !
 
 
 
-1. No cross validation -justification
-2. Illustrations to show our claim
-3. Always justify with sources
-4. Display filters would be nice
-5. Drop out, to avoid overfit - add some tables
-6. Data augmentation (rotation of 45 or 90 deg? chosen at random?)
-7. Baseline (without doing anything? using a method seen previously?)
-8. Handle Boundaries (mirror, which size?)
-9. Activation function (test which one is the best? relu, relu leak,..)
-10. Take a bigger to evaluate the center (size of the window? select all possible windows or only a few? How many?)
-11. Regularization? 
-12. Make sure same amount of road and non road training data - done in template
-13. Sliding window to have much more data.
-
 ## Further ideas
 
-- [ ] Use pre- trained models
+- [x] Use pre- trained models
 
