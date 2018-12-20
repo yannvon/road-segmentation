@@ -24,10 +24,9 @@ The project is structured as follows:
 ├── src                			# Source code directory
 │   ├── run.py	         		# Simple script to reproduce our best results
 │   ├── train_pipeline.ipynb	# Pipeline used to train our models
-│   ├── helper.py				# Contains general helper functions
+│   ├── helper.py				# General functions (cross_validation, f1, ..)
 │   ├── preprocessing_helper.py	# Contains helper funntions used for preprocessing
 │   ├── postprocessing_helper.py# Contains helper funntions used for postprocessing
-│   ├── cross_validation.py		# Script to crossvalidate models
 │   ├── basic_model.py			# Class with our first basic model
 │   ├── dense_model.py			# Class containing a model with large FC layers
 │   ├── transfer_learning.py	# Class containing a model performing transfer learning
@@ -51,21 +50,21 @@ The data set can be downloaded [the EPFL private challenge](https://www.crowdai.
 
 ## Running our models
 
-The required dependencies can be installed in a virtual environment as follows:
+We required the `requirements.txt` file which allows to install dependencies in a virtual environment as follows:
 
 ```bash
 $ virtualenv venv
-$ source activate venv
+$ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
 ```
 
-This will install the required **Tensorflow 1.12** and **Keras 2.2.4** amongst others dependencies.
+Alternatively a standard environment with **Tensorflow 1.12**, **Keras 2.2.4** and **OpenCV** installed should work.
 
 > Note that since we ran our code in an AWS Deep Learning AMI 20.0, the requirements file is somewhat unnecessarily large. 
 
 We have used EC2 instances on AWS, as well as Kaggle Kernels to run our code. If you are interested you will find exact information on how to use these resources in the Appendix at the end of this document.
 
-Finally the provided `run.py` script can either use pre-trained weights (done by default), or by setting `retrain=True`. The `submission.csv` file as will as many other images, with mask, errors etc. will be automatically created.
+Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as will as many other images, with mask, errors etc. will be automatically created.
 
 ## Our approach
 
@@ -187,11 +186,11 @@ Finally we tried to devise a multiple input neural network, which would use as i
 - [ ] Experiment with other Image classification models such as GoogleNet and ResNet
 - [ ] Try to improve transfer learning approach.
 
-# Appendix
+# Appendix (Instructions for Team mates)
 
 ### EC2 instance from AWS using Keras and Jupyter Notebooks
 
-1. Sign-up for a AWS Educate account, or even better use the promo from the Github student pack to create a full-fledged AWS account.
+1. We signed-up for a AWS Educate account, or even better use the promo from the Github student pack to create a full-fledged AWS account.
 2. Go to your AWS workbench and follow [this guide](https://hackernoon.com/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac) until the end of section 3. Note that you should select "Deep Learning AMI (Ubuntu) Version 19.0 " for example from the list of community AMI's.
 3. Follow [this AWS guide](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html) to run a Jupyter notebook server and access it from your browser. Note that if you have not configured SSL you should use http to access your notebook.
 
