@@ -10,6 +10,7 @@ In this project we compare models based on state of the art image classification
 
 ![nasa-satellite](pictures/nasa-satellite.jpg)
 
+Image source: https://www.flickr.com/photos/cwkarl/19022632612/
 
 ## Project structure
 
@@ -89,7 +90,7 @@ To avoid biases due to less road being represented in the training data, we make
 
 Figure 1: x-axis accuracy, y-axis epochs, no up-sampling(orange) versus up-sampling (blue)
 
-### 3. Consider larger field of view to classify patch
+### 3. Considering a larger field of view to classify patches
 
 Instead of classifying a 16 x 16 patch by itself, we consider using larger window sizes. To allow this the images has to be padded with pixel, where we chose to mirror pixels, which allows for example to make roads be continuous, even in the padded areas. The best size of images was analyzed as follows:
 
@@ -108,7 +109,7 @@ After performing the steps below we came back to this question and retested the 
 | 2    | Windows size of 100 | 0.980             | 0.943               | 0.884       |          |
 | 3    | Windows size of 120 | 0.977             | 0.940               | 0.883       |          |
 
-### 4. Try various data augmentation ideas
+### 4. Trying various data augmentation ideas
 
 We preprocessed the training set, and added manually hand annotated images to the data set. However, the performance was just shy of our previous best models, which is why we discarded this idea. We think that our trained model might have been more general, as we included many more interesting examples, however it could not benefit from this on the test set.
 
@@ -168,23 +169,22 @@ Now that our model was established, we continued by trying various other approac
 
 ### Transfer learning
 
-### Tiago Baby
+We imported the VGG 16 weights trained on the ImageNet dataset, removed the top layers and added 2 fully connected layers of our own. By freezing the weights of the bottom stack of convolutional layers, we hoped the model would preserve its learned feature extraction and be able to outperform our model. See report for results.
 
+### Using predictions to augment feature space
 
+Finally we tried to devise a multiple input neural network, which would use as input the usual window of pixels around the patch to predict but would have as additional input the prediction for neighboring patches made by our pre-trained  best model. We have coded this in a separate Kaggle kernel that can be found here.
 
 ## Team members
 
 - Benno Schneeberger
 - Tiago Kieliger
 - Yann Vonlanthen
-- 
 
 ## Further ideas
 
 - [ ] Experiment with other Image classification models such as GoogleNet and ResNet
-- [ ] Try to improve transfer learning approach
-
-
+- [ ] Try to improve transfer learning approach.
 
 # Appendix
 
