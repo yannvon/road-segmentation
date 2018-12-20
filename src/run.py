@@ -1,7 +1,7 @@
 from constants import *
 from dense_model import DenseModel
 from basic_model import BasicModel
-from new_model import newModel
+from deep_model import DeepModel
 from preprocessing_helper import *
 from postprocessing_helper import *
 
@@ -17,16 +17,14 @@ files = os.listdir(image_dir)
 n = len(files)
 print("Loading " + str(n) + " images")
 imgs = [load_image(image_dir + files[i]) for i in range(n)]
-print(imgs[0][2])
 
 gt_dir = data_dir + "groundtruth/"
 print("Loading " + str(n) + " images")
 gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
-print(files[0])
+
 
 # Choose model
-
-model = newModel()
+model = DeepModel()
 # model = BasicModel()
 # model = DenseModel()
 # model = TeslaModelS()

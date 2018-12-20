@@ -24,11 +24,11 @@ from preprocessing_helper import *
 from postprocessing_helper import *
 
 
-class NewModel:
+class DeepModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 100
-    OUTPUT_FILENAME = "vgg_model_wind" + str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "deep_model_wind" + str(WINDOW_SIZE)
 
     def __init__(self):
 
@@ -187,7 +187,7 @@ class NewModel:
         # Training  
         self.model.fit_generator(train_generator,
                     validation_data = validation_generator,
-                    steps_per_epoch=len(self.X_train * 16 * 16) / 32, # FIXME how many steps per epoch?
+                    steps_per_epoch=len(self.X_train * 16 * 16) / 32,
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     use_multiprocessing=True,
