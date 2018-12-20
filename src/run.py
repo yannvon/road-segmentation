@@ -8,6 +8,10 @@ from postprocessing_helper import *
 import os
 import sys
 
+# Choose whether to retrain the model or not
+retrain = False
+weights_to_load = "../trained_models/deep_model.h5"
+
 # Set Train data Directory
 data_dir = '../dataset/training/'
 
@@ -15,11 +19,8 @@ data_dir = '../dataset/training/'
 image_dir = data_dir + "images/"
 files = os.listdir(image_dir)
 n = len(files)
-print("Loading " + str(n) + " images")
 imgs = [load_image(image_dir + files[i]) for i in range(n)]
-
 gt_dir = data_dir + "groundtruth/"
-print("Loading " + str(n) + " images")
 gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
 
 
@@ -28,19 +29,26 @@ model = DeepModel()
 # model = BasicModel()
 # model = DenseModel()
 # model = TeslaModelS()
+# model = TopModel ;)
 
 # Option 2: Model loads files itself
 model.load_data(image_dir, gt_dir, constants.TRAINING_SIZE)
 
-# Train model
-model.train(epochs=200, validation_split=0.2)
-
-# Create Training set images
-# Set directory to save images
-model.generate_images(imgs, gt_imgs)
+if retrain:
+    # Train model
+    model.train(epochs=200, validation_split=0.2)
+else:
+    model.load(weights_to_load)
+    
+# Create images displaying visualizations on prediction and test performance
+# model.generate_images(imgs, gt_imgs)
 
 # Predict Test Set -> Create submission and save Images
+print("Generating submission, this can take a couple minutes..")
 model.generate_submission()
+print("Submission file was successfully generated.")
 
 # Save model
-model.save()
+if retrain:
+    model.save()
+    print("Trained model was successfully saved on disk.")

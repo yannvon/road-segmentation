@@ -28,7 +28,7 @@ class DeepModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 100
-    OUTPUT_FILENAME = "deep_model_wind" + str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "deep_model"
 
     def __init__(self):
 
@@ -44,8 +44,6 @@ class DeepModel:
         shape = (self.WINDOW_SIZE, self.WINDOW_SIZE, 3)
         model = Sequential()
 
-
-        #ITERATION 1
 
         #Add convolution 
         model.add(Convolution2D(64,
@@ -104,18 +102,11 @@ class DeepModel:
     def load_data(self, image_dir, gt_dir, training_size):
         files = os.listdir(image_dir)
         n = len(files)
-        print("Loading " + str(n) + " images")
         imgs = [load_image(image_dir + files[i]) for i in range(n)]
-        print(imgs[0][2])
-
-        print("Loading " + str(n) + " images")
         gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
-        print(files[0])
 
         self.X_train = imgs
         self.Y_train = gt_imgs
-        
-        # FIXME this will introduce randomness, i.e. different print on kaggle and aws !
         
 
     def train(self, epochs=30, validation_split=0.2):
@@ -161,16 +152,15 @@ class DeepModel:
                                                upsample=True)
 
         # Step 4: Early stop and other Callbacks
-        early_stop_callback = EarlyStopping(monitor='acc', min_delta=0, patience=20, verbose=1, 
+        early_stop_callback = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, 
                                             mode='auto', restore_best_weights=True)
         # Taken from Github model
-        # FIXME does this work for accuracy on training set?
-        lr_callback = ReduceLROnPlateau(monitor='acc', factor=0.5, patience=5,
+        lr_callback = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=5,
                                         verbose=1, mode='auto', min_delta=0, cooldown=0, min_lr=0) 
         
         # Save checkpoints
         filepath = "weights.{epoch:02d}-{acc:.2f}.hdf5"
-        checkpoint_callback = ModelCheckpoint(filepath, monitor='acc', verbose=0, save_best_only=True,
+        checkpoint_callback = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True,
                                             save_weights_only=False, mode='auto', period=1)
         
         # Save data for TensorBoard
@@ -187,7 +177,7 @@ class DeepModel:
         # Training  
         self.model.fit_generator(train_generator,
                     validation_data = validation_generator,
-                    steps_per_epoch=len(self.X_train * 16 * 16) / 32,
+                    steps_per_epoch=len(self.train_data_split * 16 * 16) / 32,
                     epochs=epochs,
                     callbacks = [early_stop_callback, lr_callback, checkpoint_callback, tensorboard_callback, csv_logger],
                     use_multiprocessing=True,
@@ -211,7 +201,7 @@ class DeepModel:
         createSubmission(self.model, self.WINDOW_SIZE)
   
     def save(self):
-        # save model on disk
+        """ save model on disk """
         # source https://machinelearningmastery.com/save-load-keras-deep-learning-models/
         # serialize model to JSON
         model_json = self.model.to_json()
@@ -221,16 +211,15 @@ class DeepModel:
         self.model.save_weights(self.OUTPUT_FILENAME + ".h5")
         print("Saved model to disk")
         
-    def load(self):
-        # FIXME
-        ##load json and create model
+    def load(self, weights_dir):
+        ## load json and create model
+        
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()
         #json_file.close()
         #loaded_model = model_from_json(loaded_model_json)
         
-        ##load weights into new model
-        self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
-        #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
+        ## load weights into new model
+        self.model.load_weights(weights_dir)
         print("Loaded model from disk")
         

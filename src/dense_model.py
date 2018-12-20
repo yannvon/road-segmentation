@@ -28,7 +28,7 @@ class DenseModel:
     """ A simple model inspired by the VGG model """
     
     WINDOW_SIZE = 80
-    OUTPUT_FILENAME = "dense_model_wind"+ str(WINDOW_SIZE)
+    OUTPUT_FILENAME = "dense_model"
 
     def __init__(self):
 
@@ -208,7 +208,6 @@ class DenseModel:
         print("Saved model to disk")
         
     def load(self):
-        # FIXME
         ##load json and create model
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()
@@ -217,6 +216,6 @@ class DenseModel:
         
         ##load weights into new model
         self.model.load_weights(self.OUTPUT_FILENAME + ".h5")
-        #loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
+        loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[f1])
         print("Loaded model from disk")
         
