@@ -64,7 +64,7 @@ Alternatively a standard environment with **Tensorflow 1.12**, **Keras 2.2.4** a
 
 We have used EC2 instances on AWS, as well as Kaggle Kernels to run our code. If you are interested you will find exact information on how to use these resources in the Appendix at the end of this document.
 
-Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as will as many other images, with mask, errors etc. will be automatically created.
+Finally the provided `run.py` script can either use pre-trained weights (done by default), or train from scratch by setting `retrain=True`. The `submission.csv` file as well as many other images, with mask, errors etc. will be automatically created.
 
 ## Our approach
 
