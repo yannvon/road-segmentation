@@ -1,10 +1,10 @@
 # CS-433 Project 2: Road Segmentation
 
-**This README should allow anyone to replicate our obtained results, for more detailed results,  interpretations, methodology see our report.**
+**This README should allow anyone to replicate our obtained results. For more detailed results,  interpretations, methodology see our report.**
 
 ## Introduction
 
-Image Segmentation in a domain of Computer Vision with a wide range of applications, such as medicine, autonomous driving, face recognition and more. In this project we have the goal to classify patches of satellite images obtained from Google Maps into road and background classes. This task is nontrivial as oftentimes the aerial view on roads is obstructed by trees, buildings and cars. Additionally the definition of a road can be very ambiguous in presence of walkways, railroads and other structures.
+Image Segmentation is a domain of Computer Vision with a wide range of applications, such as medicine, autonomous driving, face recognition and more. In this project we have the goal to classify patches of satellite images obtained from Google Maps into road and background classes. This task is nontrivial as oftentimes the aerial view on roads is obstructed by trees, buildings and cars. Additionally the definition of a road can be very ambiguous in presence of walkways, railroads and other structures.
 
 In this project we compare models based on state of the art image classification research and try to make the most use of the small training set we were given.
 
