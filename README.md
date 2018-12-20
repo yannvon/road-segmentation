@@ -122,7 +122,7 @@ By adding a callback that automatically lowers the learning rate once a plateau 
 | 1    | 80 window Basic Model, no dense, 0.1 dropout, 10% rotation   | 0.961             | 0.922               | 0.859      |             |
 | 2    | 100 window Basic Model, no dense, 0.1 dropout, 10% rotation  | 0.966             | 0.919               | 0.856      |             |
 | 3    | 100 window Basic Model, no dense, 0.25 dropout, 10% rotation, initial learning rate = 0.001 | 0.965             | 0.920               | -          |             |
-| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               | -          | needs rerun |
+| 4    | 100 window Basic Model, 1 dense, 0.1 dropout, 10% rotation, initial learning rate = 0.0005 | 0.976             | 0.944               | -          |             |
 | 5    | 100 window Basic Model, 1 dense, 0.25 dropout, basic rotation, initial learning rate = 0.0005 | 0.965             | 0.931               | -          |             |
 | 6    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.001 | 0.271             | 0.257               | -          | diverged !  |
 | 7    | 100 window Basic Model, no dense, 0.1 dropout, basic rotation, 50/50 data, initial learning rate = 0.0005 | 0.980             | 0.943               | 0.884      | new best.   |
@@ -158,7 +158,8 @@ We have shown that the standard value of alpha = 0.01 does not work best for us,
 
 | id   | Model Description      | Training Accuracy | Validation Accuracy | crowdAI F1 | comments                                              |
 | ---- | ---------------------- | ----------------- | ------------------- | ---------- | ----------------------------------------------------- |
-| 1    | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | avec 0 de alpha relu -> = relu                        |
+| 1    | Best with alpha = 0    | 0.978             | 0.935               | 0.873      | with alpha relu = 0, it is equivalent to relu 
+       |
 | 2    | Best with alpha = 0.1  | 0.980             | 0.943               | 0.884      | The value of alpha relu we used to get the best score |
 | 3    | Best with alpha = 0.01 | 0.979             | 0.9371              | 0.877      | Usually the value used..                              |
 
