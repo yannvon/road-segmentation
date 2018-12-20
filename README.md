@@ -21,6 +21,7 @@ The project is structured as follows:
 ├── dataset                 	# Location of the compressed dataset
 │   ├── training         		# Directory containing training data set, with labels
 │   └── test_set_images     	# Directory containing the testing data set, no labels
+├── hand-annotated            	# Supplementary dataset created ourselves
 ├── src                			# Source code directory
 │   ├── run.py	         		# Simple script to reproduce our best results
 │   ├── train_pipeline.ipynb	# Pipeline used to train our models
