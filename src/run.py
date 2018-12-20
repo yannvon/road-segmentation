@@ -8,11 +8,10 @@ from postprocessing_helper import *
 import os
 import sys
 
-# Choose whether to retrain the model or not
+# Step 1: choose whether to retrain the model or not
 retrain = False
 weights_to_load = "../trained_models/deep_model.h5"
-
-# Set Train data Directory
+# Set Train data set directory
 data_dir = '../dataset/training/'
 
 # Option 1: Load entire images
@@ -24,7 +23,7 @@ gt_dir = data_dir + "groundtruth/"
 gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
 
 
-# Choose model
+# Step 2: Choose model
 model = DeepModel()
 # model = BasicModel()
 # model = DenseModel()
@@ -43,7 +42,7 @@ else:
 # Create images displaying visualizations on prediction and test performance
 # model.generate_images(imgs, gt_imgs)
 
-# Predict Test Set -> Create submission and save Images
+# Predict Test Set -> Create submission and save Images and csv file
 print("Generating submission, this can take a couple minutes..")
 model.generate_submission()
 print("Submission file was successfully generated.")

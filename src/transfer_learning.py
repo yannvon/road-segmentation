@@ -20,11 +20,10 @@ from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 from keras.layers import Input, Flatten, Dense
 from keras.models import Model
-import numpy as np
 
 
 class TransferLearning:
-    """ A simple model inspired by the VGG model """
+    """ A model loading pretrained weights of VGG 16 """
     
     WINDOW_SIZE = 100
     OUTPUT_FILENAME = "vgg_model"
@@ -205,7 +204,6 @@ class TransferLearning:
         print("Saved model to disk")
         
     def load(self):
-        # FIXME
         ##load json and create model
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()

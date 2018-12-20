@@ -25,7 +25,7 @@ from postprocessing_helper import *
 
 
 class DeepModel:
-    """ A simple model inspired by the VGG model """
+    """ Our best performing model inspired by the VGG architecture """
     
     WINDOW_SIZE = 100
     OUTPUT_FILENAME = "deep_model"
@@ -104,7 +104,6 @@ class DeepModel:
         n = len(files)
         imgs = [load_image(image_dir + files[i]) for i in range(n)]
         gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
-
         self.X_train = imgs
         self.Y_train = gt_imgs
         
@@ -135,9 +134,7 @@ class DeepModel:
         
         # Option 3: upsample data 
         # This is done here, in the image_generator directly !
-        
-        # Note: Should we also upsample validation set?
-        
+                
         # Step 3: Greate Generators
         train_generator = image_generator(self.train_data_split,
                                           self.train_label_split,
@@ -212,7 +209,7 @@ class DeepModel:
         print("Saved model to disk")
         
     def load(self, weights_dir):
-        ## load json and create model
+        """ load model weights """ 
         
         #json_file = open('model.json', 'r')
         #loaded_model_json = json_file.read()

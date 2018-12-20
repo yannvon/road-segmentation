@@ -5,15 +5,11 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, T
 from keras.models import model_from_json
 from sklearn.metrics import f1_score
 import numpy as np
-
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers import LeakyReLU
 from keras.regularizers import l2
-
-# FIXME too many imports, remove unnecessary
 from keras import callbacks
-from keras.applications.vgg19 import VGG19
 from keras.layers import Input, Flatten, Dense
 from keras.models import Model
 from keras.optimizers import Adam
@@ -43,9 +39,6 @@ class DenseModel:
         #To change according to the shape
         shape = (self.WINDOW_SIZE, self.WINDOW_SIZE, 3)
         model = Sequential()
-
-
-        #ITERATION 1
 
         #Add convolution 
         model.add(Convolution2D(64,
